@@ -115,7 +115,7 @@ ggdraw() + draw_plot(map2, 0, .175, height = 1, width = 1) +
   draw_plot(fig1b, 0, 0, height = .385, width = 1)
 
 ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.pdf", width = 6, height = 7)
-ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png", width = 6, height = 8)
+ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png", width = 6, height = 7)
 
 #--------------------------------------------------------------
 # Animated Plot
@@ -256,7 +256,7 @@ for (i in unique(movdat$timestamp)){
 # Figure 2: Distance (log transformation))
 
 # (A)
-{
+
   dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
   dat <- dat %>% 
     mutate(day = day(timestamp),
@@ -297,13 +297,6 @@ for (i in unique(movdat$timestamp)){
     group_by(timestamp) %>% 
     summarise(sum = sum(prob))
   
-  # savedat <- outdat %>% 
-  #   mutate(day = day(timestamp)) %>% 
-  #   filter(day >= 10 & day <= 20) %>% 
-  #   dplyr::select(timestamp, bin, prob) %>% 
-  #   spread(key=timestamp, value=prob)
-  # write_feather(savedat, "~/Projects/Anomalous-IUU-Events-Argentina/data/heatmap_ln_distance_matrix_March10-20.feather")
-  # 
   outdat$day <- day(outdat$timestamp)
   
   
@@ -311,7 +304,7 @@ for (i in unique(movdat$timestamp)){
   as.Date.POSIXct(outdat$timestamp, c("%Y-%m-%d %h:00:00 PST"))
   outdat$timestamp <- as.POSIXct(outdat$timestamp)
   
-  sb <- c(seq(5, 45, 5))
+  sb <- c(seq(5, 50, 5))
   # Get log feet to dispaly on left side
   ddat <- dat %>% 
     group_by(bin) %>% 
@@ -320,7 +313,7 @@ for (i in unique(movdat$timestamp)){
   ddat
   ddat$x <- as.POSIXct("2016-03-09 23:00:00")
   
-  outdat <- filter(outdat, bin >= 5 & bin <= 45)
+  outdat <- filter(outdat, bin >= 5 & bin <= 50)
   outdat$day <- day(outdat$timestamp)
   a <- ifelse(outdat$day != 15, "black", "blue")
 
@@ -329,7 +322,7 @@ for (i in unique(movdat$timestamp)){
   fig2a <- ggplot(outdat, aes(x=timestamp, y=factor(bin))) + 
     geom_tile(aes(fill = prob)) +
     theme_tufte(14) +
-    annotate("text", x=as.POSIXct("2016-03-20 6:00:00"), y = 43, label='(a)', size = 5, color  = "white") +
+    annotate("text", x=as.POSIXct("2016-03-20 6:00:00"), y = 45, label='(a)', size = 5, color  = "white") +
     labs(x="Day in March", y="Binned Distance (log km)", fill="P(d)") +
     geom_vline(xintercept = 14) +
     scale_x_datetime(date_breaks = "1 day",
@@ -337,18 +330,16 @@ for (i in unique(movdat$timestamp)){
                      labels = c(seq(10, 21, 1)),
                      breaks = seq(10, 21, 1),
                      expand = expand_scale(mult = c(0, 0))) +
-    scale_y_discrete(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45), 
+    scale_y_discrete(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50), 
                      labels = round(ddat$m_dist, 1), 
                      expand = c(0, 0)) +
     scale_fill_gradientn(colours=rev(brewer.pal(11, "Spectral")), na.value = 'salmon') +
     annotate("rect", xmin = as.POSIXct("2016-03-13 01:00:00"), 
              xmax = as.POSIXct("2016-03-17 01:00:00"),  
              ymin = 0, 
-             ymax = 45, 
+             ymax = 47,
              colour="white", alpha=0.1) +
-    # annotate(geom = "text", x = as.POSIXct("2016-03-15 00:00:00"), y = -3.5, label = c("asdf"), size = 5) +
-    # coord_cartesian(ylim = c(0, 50), expand = FALSE, clip = "off") +
-    annotate("text", x = as.POSIXct("2016-03-15 00:00:00"), y=43, label="Event Window", color='white') +
+    annotate("text", x = as.POSIXct("2016-03-15 00:00:00"), y=45, label="Event Window", color='white') +
     theme(legend.position = 'right',
           legend.margin=margin(l = 0, unit='cm'),
           panel.border = element_rect(colour = "grey", fill=NA, size=1),
@@ -361,8 +352,6 @@ for (i in unique(movdat$timestamp)){
     NULL
   
   fig2a
-  
-  #ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2a.pdf", width = 6, height = 4)
   
 
 
@@ -432,7 +421,7 @@ ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2_log.pdf", widt
 
 #------------------------------------------
 # Figure 3 - time-series of the trailing rate of change in JS divergence as an index of behavioral change
-{
+
 dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-01_2016-03-31.feather"))
 
 d <- as.matrix(dat)
@@ -528,13 +517,13 @@ fig3a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) +
   guides(color = guide_colorbar(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5),
          shape = guide_legend(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5)) +
   annotate("text", x = -0.08, y = -0.068, label = "k=2", size=2.5) +
-  annotate("text", x = -0.08, y = -0.075, label = "stress=6.91", size=2.5) +
+  annotate("text", x = -0.08, y = -0.075, label = paste0("stress=", round(stress/100, 3)), size=2.5) +
   # coord_equal() +
   NULL
 
 fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
   geom_point(size=.8) +
-  labs(x="Day of March", y="Speed of JS-Distance Divergence", color = "Cluster") +
+  labs(x="Day in March", y="Speed of JS-Distance Divergence", color = "Cluster") +
   theme_tufte(13) +
   theme(legend.position = c(.5, .95),
         legend.box = "horizontal",
@@ -580,7 +569,7 @@ isoMDS_dat$speed <- isoMDS_dat$dist/1
 
 # Remove last obs
 isoMDS_dat <- filter(isoMDS_dat, !is.na(cluster) | !is.na(dist))
-isoMDS_dat$dist
+
 
 # isoMDS_dat$event <- ifelse(isoMDS_dat$row >= 336, ifelse(isoMDS_dat$row <= 360, 1, 0), 0)
 fig4a <- ggplot(isoMDS_dat, aes(x=x, y=y, z=z, color=speed, shape = factor(cluster))) + 
@@ -615,7 +604,7 @@ fig4a
 
 fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
   geom_point(size=.8) +
-  labs(x="Day of March", y="Speed of JS-Distance Divergence", color = "Cluster") +
+  labs(x="Day in March", y="Speed of JS-Distance Divergence", color = "Cluster") +
   theme_tufte(13) +
   theme(legend.position = c(.5, .95),
         legend.box = "horizontal",
