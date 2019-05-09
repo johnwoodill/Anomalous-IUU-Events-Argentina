@@ -11,27 +11,34 @@ The following repo provides reproducible results for the paper, "Anticipating an
 **Events:** 
 
 March 15, 2016
+
 https://www.cnn.com/2016/03/15/americas/argentina-chinese-fishing-vessel/index.html
 
 
 Feb 2, 2018
+
 http://www.laht.com/article.asp?CategoryId=14093&ArticleId=2450374
 
 
-
 Feb 21, 2018
+
 https://www.reuters.com/article/us-argentina-china-fishing/argentina-calls-for-capture-of-five-chinese-fishing-boats-idUSKCN1GK35T
 
 
 --------------
 
-**File Descriptions**
+**Folders**
 
 * `data/` - data available for release
 
 * `figures/` - main figures
 
 * `spatialIUU/` - custom classes and methods. See [spatialIUU repo](https://github.com/johnwoodill/spatialIUU) for additional information and build tests.
+
+
+--------------
+
+**Files**
 
 * `supp_figures/` - supplemental main figures
 
