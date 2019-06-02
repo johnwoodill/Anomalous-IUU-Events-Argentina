@@ -428,4 +428,3 @@ def compileData(beg_date, end_date, region, parallel=False, ncores=None):
 
     savedat = savedat.reset_index(drop=True)
     savedat.to_feather(f"{PROC_DATA_LOC}{REGION}_5NN_region{region}_{beg_date}_{end_date}.feather")
-

@@ -1,4 +1,3 @@
-
 import spatialIUU.processGFW as siuu
 
 
@@ -26,12 +25,12 @@ siuu.compileData('2016-03-01', '2016-03-31', 1, parallel=True, ncores=20)
 
 # Second event: Feb 2, 2018
 # http://www.laht.com/article.asp?CategoryId=14093&ArticleId=2450374
-siuu.compileData('2018-01-15', '2018-02-15', 1, parallel=True, ncores=10)
+siuu.compileData('2018-01-15', '2018-02-15', 1, parallel=True, ncores=20)
 
 
 # Third event: Feb 21, 2018
 # https://www.reuters.com/article/us-argentina-china-fishing/argentina-calls-for-capture-of-five-chinese-fishing-boats-idUSKCN1GK35T
-siuu.compileData('2018-02-01', '2018-03-10', 1, parallel=True, ncores=10)
+siuu.compileData('2018-02-01', '2018-03-10', 1, parallel=True, ncores=20)
 
 # beg_date = '2016-03-14'
 # end_date = '2016-03-16'

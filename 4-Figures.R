@@ -37,13 +37,31 @@ dat$min <- stringr::str_pad(dat$min, 2, side = "left", pad = 0)
 
 dat$ln_distance <- log(1 + dat$distance)
 
-fig1_dat <- filter(dat, month == "03" & day == "15" & hour == "12" & NN <= 1)
+fig1_dat <- filter(dat, month == "03" & day == "05" & hour == "12" & NN <= 3)
 
 # Puerto Madryn
 #-42.7694° S, -65.0317° W
 
 # Correct 4/24/2019
 bat <- getNOAA.bathy(-68, -51, -48, -39, res = 1, keep = TRUE)
+bat2 <- getNOAA.bathy(-77, -22, -58, -23, res = 1, keep = TRUE)
+
+loc = c(-58, -22)
+map1 <- ggmap(get_map(loc, zoom = 3, maptype='toner-background', color='bw', source='stamen')) + 
+  geom_segment(x=-62, xend=-62, y=-40, yend=-45, color='red') +
+  geom_segment(x=-62, xend=-54, y=-45, yend=-45, color='red') +
+  geom_segment(x=-54, xend=-54, y=-45, yend=-40, color='red') +
+  geom_segment(x=-62, xend=-54, y=-40, yend=-40, color='red') +
+  labs(x=NULL, y=NULL) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.border = element_rect(colour = "black", fill=NA, size=1)) +
+  NULL
+map1
 
 
 date_ <- paste0(fig1_dat$year[1], "-", fig1_dat$month[1], "-", fig1_dat$day[1], " ", fig1_dat$hour[1], ":", fig1_dat$min[1], ":00")
@@ -58,11 +76,11 @@ map2 <-
                        colors = c("lightsteelblue4", "lightsteelblue2", "#C6E0FC", 
                                   "grey50", "grey70", "grey85")) +
   labs(x=NULL, y=NULL, color="km") +
-  geom_segment(data=fig1_dat, aes(x=vessel_A_lon, xend=vessel_B_lon, y=vessel_A_lat, yend=vessel_B_lat, color=distance), size = 0.1) +
-  geom_segment(data=fig1_dat, aes(x=vessel_B_lon, xend=vessel_A_lon, y=vessel_B_lat, yend=vessel_A_lat, color=distance), size = 0.1) +
-  geom_point(data=fig1_dat, aes(x=vessel_B_lon, y=vessel_B_lat), size = 0, color='blue') +
-  geom_point(data=fig1_dat, aes(x=vessel_A_lon, y=vessel_A_lat), size = 0, color='red') +
-  annotate("text", x=-53.75, y = -39.25, label=date_, size = 4, color='black', fontface=2) +
+  geom_segment(data=fig1_dat, aes(x=vessel_A_lon, xend=vessel_B_lon, y=vessel_A_lat, yend=vessel_B_lat), size = 0.1, color='darkgrey') +
+  geom_segment(data=fig1_dat, aes(x=vessel_B_lon, xend=vessel_A_lon, y=vessel_B_lat, yend=vessel_A_lat), size = 0.1, color='darkgrey') +
+  geom_point(data=fig1_dat, aes(x=vessel_A_lon, y=vessel_A_lat), size = .5, color='red', alpha=0.7) +
+  annotate("text", x=-51.75, y = -39.25, label="(A)", size = 4, color='black', fontface=2) +
+  annotate("text", x=-65.5, y = -39.25, label=date_, size = 4, color='black', fontface=2) +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
@@ -105,17 +123,23 @@ fig1b <- ggplot(filter(fig1_dat, distance != 0), aes(log(1 + distance))) +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "black") +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "black") +
   theme_tufte(13) +
+  annotate("text", x=6, y = 0.45, label="(B)", size = 4, color='black', fontface=2) +
+  xlim(0, 6) +
   labs(y="Probability", x="Distance (log km)")
 fig1b
 
 
-# Panel plot
+# ggdraw() + draw_plot(map2, 0, .175, height = 1, width = 1) +
+#   draw_plot(map1, .65, .368, height = .26, width = .25) +
+#   draw_plot(fig1b, 0, 0, height = .385, width = 1)
+
+# Without color guide lines
 ggdraw() + draw_plot(map2, 0, .175, height = 1, width = 1) +
-  draw_plot(map1, .65, .368, height = .26, width = .25) +
+  draw_plot(map1, .75, .335, height = .26, width = .25) +
   draw_plot(fig1b, 0, 0, height = .385, width = 1)
 
 ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.pdf", width = 6, height = 7)
-ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png", width = 6, height = 7)
+# ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png", width = 6, height = 7)
 
 #--------------------------------------------------------------
 # Animated Plot
@@ -322,7 +346,7 @@ for (i in unique(movdat$timestamp)){
   fig2a <- ggplot(outdat, aes(x=timestamp, y=factor(bin))) + 
     geom_tile(aes(fill = prob)) +
     theme_tufte(14) +
-    annotate("text", x=as.POSIXct("2016-03-20 6:00:00"), y = 45, label='(a)', size = 5, color  = "white") +
+    annotate("text", x=as.POSIXct("2016-03-20 10:00:00"), y = 45, label='(A)', size = 5, color  = "white") +
     labs(x="Day in March", y="Binned Distance (log km)", fill="P(d)") +
     geom_vline(xintercept = 14) +
     scale_x_datetime(date_breaks = "1 day",
@@ -401,7 +425,7 @@ for (i in unique(movdat$timestamp)){
     annotate("text", x=4, y = 1, label='Cluster 1', size = 3) +
     annotate("text", x=19, y = 8, label='Cluster 2', size = 3) +
     annotate("text", x=29, y = 23, label='Cluster 3', size = 3) +
-    annotate("text", x=30, y = 1.5, label='(b)', size = 5, color="white") +
+    annotate("text", x=30, y = 1.5, label='(B)', size = 5, color="white") +
     guides(fill = guide_colorbar(label.hjust = unit(0, 'cm'),
                                  frame.colour = "black",
                                  barwidth = .5,
@@ -413,7 +437,7 @@ for (i in unique(movdat$timestamp)){
 ggdraw() + draw_plot(fig2a, 0, .50, height = .50, width = 1) +
   draw_plot(fig2b, 0.01, -.25, height=1, width = 1)
 
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2_log.png", width = 5, height = 8)
+# ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2_log.png", width = 5, height = 8)
 ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2_log.pdf", width = 5, height = 8)
 
 
@@ -423,6 +447,8 @@ ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2_log.pdf", widt
 # Figure 3 - time-series of the trailing rate of change in JS divergence as an index of behavioral change
 
 dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-01_2016-03-31.feather"))
+# dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2018-01-15_2018-02-15.feather"))
+# dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2018-02-01_2018-03-10.feather"))
 
 d <- as.matrix(dat)
 fit <- isoMDS(d, k=2)
@@ -457,46 +483,15 @@ isoMDS_dat$dist <- sqrt(((isoMDS_dat$x - isoMDS_dat$y)^2 + (lead(isoMDS_dat$x) -
 
 # Remove last obs
 isoMDS_dat <- filter(isoMDS_dat, !is.na(cluster) | !is.na(dist))
-isoMDS_dat$dist
 
 event_day <- filter(isoMDS_dat, row >= 12*24 & row <= 17*24)
 
-ggplot(isoMDS_dat, aes(x, y, color = dist, shape = factor(cluster))) + 
-  geom_point() +
-  # geom_point(data=event_day, aes(x, y), color='red') +
-  theme_tufte(13) +
-  scale_color_gradientn(colours=brewer.pal(7,"YlGnBu")) +
-  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
-  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
-  annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
-  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
-  labs(x = "Dimension 1", 
-       y= "Dimension 2", 
-       color = "Distance", 
-       shape = "Cluster",
-       title = "Non-metric Multidimensional Scaling of JS-Distance \n March 1 - 31 2016 (Clustered by hour using k-medoids)") +
-  theme(aspect.ratio=1,
-        legend.position = c(.5, .80),
-        legend.direction = 'horizontal',
-        legend.justification = 'center',
-        legend.title=element_text(size=8),
-        legend.text = element_text(size=8),
-        plot.title = element_text(hjust = 0.5)) +
-  guides(color = guide_colorbar(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5),
-        shape = guide_legend(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5)) +
-  annotate("text", x = -0.11, y = -0.071, label = "k=2", size=2.5) +
-  annotate("text", x = -0.11, y = -0.075, label = paste0("stress=", round(stress/100, 3)), size=2.5) +
-  NULL
-
-isoMDS_dat$speed <- isoMDS_dat$dist/1
-  
-
-# Color by speed (distance from day to lead(day))
 fig3a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) + geom_point() +
   theme_tufte(13) +
-  # ylim(-0.12, .12) +
-  # xlim(-0.12, 0.12) +
+  xlim(-0.10, .10) +
+  # ylim(-0.12, 0.12) +
   scale_color_gradientn(colours=brewer.pal(7,"YlGnBu")) +
+  annotate("text", x=0.10, y = 0.10, label='(A)', size = 5, color="black") +
   annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
   annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
@@ -507,28 +502,37 @@ fig3a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) +
        # title = "Non-metric Multidimensional Scaling of JS-Distance \n March 1 - 31 2016 (Clustered by hour using k-medoids)",
        shape = "Cluster") +
   theme(#aspect.ratio=1,
-         legend.position = c(.5, .9),
-        legend.box = "horizontal",
-        legend.direction = 'horizontal',
-        legend.justification = 'center',
-        legend.title=element_text(size=8),
-        legend.text = element_text(size=8),
-        plot.title = element_text(hjust = 0.5)) +
+    legend.position = c(.5, .9),
+    legend.box = "horizontal",
+    legend.direction = 'horizontal',
+    legend.justification = 'center',
+    legend.title=element_text(size=8),
+    legend.text = element_text(size=8),
+    plot.title = element_text(hjust = 0.5)) +
   guides(color = guide_colorbar(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5),
          shape = guide_legend(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5)) +
-  annotate("text", x = -0.08, y = -0.068, label = "k=2", size=2.5) +
-  annotate("text", x = -0.08, y = -0.075, label = paste0("stress=", round(stress/100, 3)), size=2.5) +
-  # coord_equal() +
+  annotate("text", x = -0.09, y = -0.071, label = "k=2", size=2.5) +
+  annotate("text", x = -0.09, y = -0.075, label = paste0("stress=", round(stress/100, 3)), size=2.5) +
   NULL
 
+fig3a
+isoMDS_dat$speed <- isoMDS_dat$dist/1
+  
+
+# Color by speed (distance from day to lead(day))
 fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
   geom_point(size=.8) +
   labs(x="Day in March", y="Speed of JS-Distance Divergence", color = "Cluster") +
+  annotate("text", x=24*31, y = 0.15, label='(B)', size = 5, color="black") +
   theme_tufte(13) +
-  theme(legend.position = c(.5, .95),
-        legend.box = "horizontal",
-        legend.direction = 'horizontal',
-        legend.justification = 'center',
+  geom_vline(xintercept = 12*24, color='grey') +
+  geom_vline(xintercept = 18*24, color='grey') +
+  annotate('text', x=15*24, y=0.15, label = "Event \n Window", size = 3) +
+  theme(legend.position = c(.15, .2),
+        legend.box = "vertical",
+        legend.box.background = element_rect(colour = "grey"),
+        legend.direction = 'vertical',
+        legend.justification = 'right',
         legend.title=element_text(size=8),
         legend.text = element_text(size=8),
         plot.title = element_text(hjust = 0.5)) +
@@ -538,13 +542,20 @@ fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey")
 
+# theme(legend.position = "none",
+#       legend.box.background = element_rect(colour = "grey"),
+#       legend.title = element_blank(),
+#       legend.key = element_rect(fill = NA, color = NA),
+#       legend.text=element_text(size=8))
+
 fig3b
 
+# ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3_b.png", width = 6, height = 4)
 
 ggdraw() + draw_plot(fig3a, 0, 0, height = 1, width = .5) +
   draw_plot(fig3b, .50, 0, height= 1, width = .5)
 
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.png", width = 10, height = 4)
+# ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.png", width = 10, height = 4)
 ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.pdf", width = 10, height = 4)
 
 

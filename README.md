@@ -72,13 +72,13 @@ Figure 2: A) Heatmap time series of average NN distance distributions. B) Heatma
 <img align="center" width="500" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure2_log.png?raw=true">
 
 
-Figure 4: nMDS of JS-Divergence (2-dimensions)
+Figure 3: nMDS of JS-Divergence (2-dimensions)
 
 <p align="center">
 
 <img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure3.png?raw=true">
 
-Figure 5: nMDS of JS-Divergence (3-dimensions)
+Figure 4: nMDS of JS-Divergence (3-dimensions)
 
 <p align="center">
 
