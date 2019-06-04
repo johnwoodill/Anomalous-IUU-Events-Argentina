@@ -9,7 +9,7 @@ siuu.GFW_OUT_DIR_CSV = '/home/server/pi/homes/woodilla/Data/GFW_point/Patagonia_
 siuu.GFW_OUT_DIR_FEATHER = '/home/server/pi/homes/woodilla/Data/GFW_point/Patagonia_Shelf/feather/'
 siuu.PROC_DATA_LOC = '/home/server/pi/homes/woodilla/Projects/Anomalous-IUU-Events-Argentina/data/'
 siuu.REGION = 'Argentina'
-siuu.MAX_SPEED = 40
+siuu.MAX_SPEED = 32
 
 siuu.region = 1
 siuu.lon1 = -68

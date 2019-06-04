@@ -446,9 +446,7 @@ ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2_log.pdf", widt
 #------------------------------------------
 # Figure 3 - time-series of the trailing rate of change in JS divergence as an index of behavioral change
 
-dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-01_2016-03-31.feather"))
-# dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2018-01-15_2018-02-15.feather"))
-# dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2018-02-01_2018-03-10.feather"))
+dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-01_2016-03-31.feather"))
 
 d <- as.matrix(dat)
 fit <- isoMDS(d, k=2)
@@ -479,16 +477,18 @@ isoMDS_dat <- left_join(isoMDS_dat, clustdat, by = 'row')
 
 # Calc distance t and t+1
 # 2-axis
-isoMDS_dat$dist <- sqrt(((isoMDS_dat$x - isoMDS_dat$y)^2 + (lead(isoMDS_dat$x) - lead(isoMDS_dat$y)))^2)
+isoMDS_dat$dist <- sqrt( (isoMDS_dat$x - isoMDS_dat$y)^2 + (lead(isoMDS_dat$x) - lead(isoMDS_dat$y))^2 )
 
 # Remove last obs
 isoMDS_dat <- filter(isoMDS_dat, !is.na(cluster) | !is.na(dist))
 
 event_day <- filter(isoMDS_dat, row >= 12*24 & row <= 17*24)
 
+isoMDS_dat$speed <- isoMDS_dat$dist/1
+
 fig3a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) + geom_point() +
   theme_tufte(13) +
-  xlim(-0.10, .10) +
+  # xlim(-0.10, .10) +
   # ylim(-0.12, 0.12) +
   scale_color_gradientn(colours=brewer.pal(7,"YlGnBu")) +
   annotate("text", x=0.10, y = 0.10, label='(A)', size = 5, color="black") +
@@ -516,18 +516,18 @@ fig3a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) +
   NULL
 
 fig3a
-isoMDS_dat$speed <- isoMDS_dat$dist/1
+
   
 
 # Color by speed (distance from day to lead(day))
 fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
   geom_point(size=.8) +
   labs(x="Day in March", y="Speed of JS-Distance Divergence", color = "Cluster") +
-  annotate("text", x=24*31, y = 0.15, label='(B)', size = 5, color="black") +
+  annotate("text", x=24*31, y = 0.22, label='(B)', size = 5, color="black") +
   theme_tufte(13) +
   geom_vline(xintercept = 12*24, color='grey') +
   geom_vline(xintercept = 18*24, color='grey') +
-  annotate('text', x=15*24, y=0.15, label = "Event \n Window", size = 3) +
+  annotate('text', x=15*24, y=0.22, label = "Event \n Window", size = 3) +
   theme(legend.position = c(.15, .2),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),

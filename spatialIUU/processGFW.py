@@ -289,9 +289,13 @@ def processGFW(i):
     mmsi_kph = outdat.groupby('mmsi', as_index=False)['kph'].max()
 
     # Keep vessels travel less than 32kph
+    mmsi_all = mmsi_kph['mmsi'].unique()
     mmsi_kph2 = mmsi_kph[mmsi_kph['kph'] <= MAX_SPEED]
     mmsi_keep = mmsi_kph2['mmsi'].unique()
     outdat = outdat[outdat['mmsi'].isin(mmsi_keep)]
+
+    # Get spoofing numbers
+    #print(f"Start MMSI: {len(mmsi_all)} Keep MMSI: {len(mmsi_keep)} Percentage: {len(mmsi_keep)/len(mmsi_all)}")
 
     # SAVE FILE OUTPUT
         
