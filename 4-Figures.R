@@ -15,14 +15,8 @@ GAPI_Key <- file("~/Projects/Anomalous-IUU-Events-Argentina/Google_api_key.txt",
 GAPI_Key <- readLines(GAPI_Key)
 register_google(key=GAPI_Key)
 
-
-
-
-
-
 #------------------------------------------
 # Figure 1: Map, NN, and distr
-{
 dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
 dat$month <- month(dat$timestamp)
 dat$day <- day(dat$timestamp)
@@ -139,244 +133,109 @@ ggdraw() + draw_plot(map2, 0, .175, height = 1, width = 1) +
   draw_plot(fig1b, 0, 0, height = .385, width = 1)
 
 ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.pdf", width = 6, height = 7)
-# ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png", width = 6, height = 7)
-
-#--------------------------------------------------------------
-# Animated Plot
-dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Puerto_Madryn_5NN_region1_2016-3-1_2016-4-1.feather'))
-dat$month <- month(dat$timestamp)
-dat$day <- day(dat$timestamp)
-dat$hour <- hour(dat$timestamp)
-dat$year <- year(dat$timestamp)
-dat$min <- minute(dat$timestamp)
-dat$ln_distance <- log(1 + dat$distance)
-
-dat$month <- stringr::str_pad(dat$month, 2, side = "left", pad = 0)
-dat$day <- stringr::str_pad(dat$day, 2, side = "left", pad = 0)
-dat$hour <- stringr::str_pad(dat$hour, 2, side = "left", pad = 0)
-dat$min <- stringr::str_pad(dat$min, 2, side = "left", pad = 0)
-
-movdat <- dat
-
-# movdat <- filter(movdat, vessel_A_lon >= -64 & vessel_A_lon <= -51)
-# movdat <- filter(movdat, vessel_A_lat >= -48 & vessel_A_lat <= -39)
-# 
-# movdat <- filter(movdat, vessel_B_lon >= -64 & vessel_B_lon <= -51)
-# movdat <- filter(movdat, vessel_B_lat >= -48 & vessel_B_lat <= -39)
-
-NN_max <- 3
-
-movdat <- filter(movdat, NN <= NN_max)
-movdat <- filter(movdat, month == "03")
-
-#i = movdat$timestamp[100000]
-i = "2016-03-15 12:00:00"
-i = "2016-03-15 19:00:00"
-i = "2016-03-29 00:00:00"
-
-for (i in unique(movdat$timestamp)){
-  
-  subdat <- filter(movdat, timestamp == i)
-  
-  # REMOVE !!!!
-  
-  # bat <- getNOAA.bathy(-68, -51, -48, -39, res = 1, keep = TRUE)
-  
-  # Subsets out region but need to fix code to subset out vessels on land
-  
-  # Southern Zone
-  # subdat1 <- filter(subdat, vessel_A_lon >= -62.965677 & vessel_A_lon <= -51)
-  # subdat1 <- filter(subdat1, vessel_B_lon >= -62.965677 & vessel_B_lon <= -51)
-  # 
-  # subdat1 <- filter(subdat1, vessel_A_lat <= -41.320881 & vessel_A_lat >=-48)
-  # subdat1 <- filter(subdat1, vessel_B_lat <= -41.320881 & vessel_B_lat >= -48)
-  # 
-  # # Northern Zone
-  # subdat2 <- filter(subdat, vessel_A_lon >= -61.506078 & vessel_A_lon <= -51)
-  # subdat2 <- filter(subdat2, vessel_B_lon >= -61.506078 & vessel_B_lon <= -51)
-  # 
-  # subdat2 <- filter(subdat2, vessel_A_lat <= -39.334430 & vessel_A_lat >= -41.320881)
-  # subdat2 <- filter(subdat2, vessel_B_lat <= -39.334430 & vessel_B_lat >= -41.320881)
-  # 
-  # subdat <- rbind(subdat1, subdat2)
-  # 
-  # subdat <- subdat2
-  # 
-  # nv_2 <- subdat %>% 
-  #   group_by(month, day, hour, vessel_A) %>% 
-  #   summarise(nn = n()) %>% 
-  #   filter(nn == NN_max + 1) %>% 
-  #   ungroup()
-  # 
-  # nv_3 <- subdat %>% 
-  #   group_by(month, day, hour, vessel_B) %>% 
-  #   summarise(nn = n()) %>% 
-  #   filter(nn == NN_max + 1) %>% 
-  #   ungroup()
-    
-  
-  # subdat <- filter(subdat, (vessel_A %in% unique(nv_2$vessel_A)) |  (vessel_B %in% unique(nv_3$vessel_B)))
-  
-  #-----------------------------------------------
-  #-----------------------------------------------
-  
-  date_ <- paste0(subdat$year[1], "-", subdat$month[1], "-", subdat$day[1], " ", subdat$hour[1], ":", subdat$min[1], ":00")
-  date_
-  
-  #  #C6E0FC
-  
-  movmap <- 
-    # ggplot(bat, aes(x, y, z)) +
-    autoplot(bat, geom = c("raster", "contour")) +
-    geom_raster(aes(fill=z)) +
-    geom_contour(aes(z = z), colour = "white", alpha = 0.05) +
-    scale_fill_gradientn(values = scales::rescale(c(-6600, 0, 1, 1500)),
-                         colors = c("lightsteelblue4", "lightsteelblue2", "#C6E0FC", 
-                                    "grey50", "grey70", "grey85")) +
-    labs(x=NULL, y=NULL, color="km") +
-    geom_segment(data=subdat, aes(x=vessel_A_lon, xend=vessel_B_lon, y=vessel_A_lat, yend=vessel_B_lat, color=distance), size = 0.1) +
-    geom_segment(data=subdat, aes(x=vessel_B_lon, xend=vessel_A_lon, y=vessel_B_lat, yend=vessel_A_lat, color=distance), size = 0.1) +
-    geom_point(data=subdat, aes(x=vessel_B_lon, y=vessel_B_lat), size = 0, color='blue') +
-    geom_point(data=subdat, aes(x=vessel_A_lon, y=vessel_A_lat), size = 0, color='red') +
-    annotate("text", x=-53.75, y = -39.25, label=date_, size = 4, color='black', fontface=2) +
-    theme(axis.title.x=element_blank(),
-          axis.text.x=element_blank(),
-          axis.ticks.x=element_blank(),
-          axis.title.y=element_blank(),
-          axis.text.y=element_blank(),
-          axis.ticks.y=element_blank(),
-          legend.direction = 'vertical',
-          legend.justification = 'center',
-          legend.position = c(.95, 0.24),
-          legend.margin=margin(l = 0, unit='cm'),
-          legend.text = element_text(size=10),
-          legend.title = element_text(size=12),
-          panel.grid = element_blank()) +
-    scale_color_gradientn(colours=brewer.pal(9, "YlOrRd"), limits=c(0, 200)) +
-    
-    # Legend up top
-    guides(fill = FALSE,
-           color = guide_colorbar(title.hjust = unit(1.1, 'cm'),
-                                  title.position = "top",
-                                  frame.colour = "black",
-                                  barwidth = .5,
-                                  barheight = 7,
-                                  label.position = 'left')) +
-    annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "black", size=1) + #Bottom
-    annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "black", size=1) + # Left
-    annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "black", size=1) + # Right
-    annotate("segment", x=-Inf, xend=Inf, y=Inf, yend=Inf, color = "black", size=1) + # Top
-    # scale_y_continuous(expand=c(0,0)) +
-    # scale_x_continuous(expand=c(0,0)) +
-    NULL
-  # movmap
-  
-  # ggsave(filename="~/Projects/test.pdf", movmap, width=6, height=4)
-
-  ggsave(filename = paste0("~/Projects/Anomalous-IUU-Events-Argentina/figures/animation/hourly_figures/NN3/", date_, ".png"), width = 6, height = 4, plot = movmap)
-}
+ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png", width = 6, height = 7)
 
 #------------------------------------------
 # Figure 2: Distance (log transformation))
 
 # (A)
 
-  dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
-  dat <- dat %>% 
-    mutate(day = day(timestamp),
-           hour = hour(timestamp),
-           month = month(timestamp)) %>% 
-    filter(month == 3) %>%
-    filter(day >= 10 & day <= 20) %>% 
-    filter(distance != 0) %>% 
-    group_by(timestamp, vessel_A) %>% 
-    summarise(distance = mean(distance),
-              ln_distance = mean(log(1 + distance)))
-  
-  dat2$date <- paste0(year(dat2$timestamp), "-", month(dat2$timestamp), "-", day(dat2$timestamp), "-", hour(dat2$timestamp))
-  
-  cdat <- cut(dat$ln_distance, breaks = 50)
-  
-  dat$breaks <- cdat 
-  dat$bin <- as.numeric(dat$breaks)
-  
-  
-  char <- unique(cdat)
-  retdat <- data.frame()
-  for (j in char){
-    ldat <- data.frame(a = as.numeric(strsplit(gsub("\\[|\\]|\\(|\\)", "", j), ",")[[1]][1]),
-                       b = as.numeric(strsplit(gsub("\\[|\\]|\\(|\\)", "", j), ",")[[1]][2]))
-    retdat <- rbind(retdat, ldat)
-  }
-  
-  outdat <- dat %>% 
-    group_by(timestamp) %>% 
-    mutate(nvessels = n()) %>% 
-    group_by(timestamp, bin, nvessels) %>% 
-    summarise(nbin_vessels = n()) %>% 
-    mutate(prob = nbin_vessels/nvessels) %>% 
-    ungroup()
-  
-  outdat %>% 
-    group_by(timestamp) %>% 
-    summarise(sum = sum(prob))
-  
-  outdat$day <- day(outdat$timestamp)
-  
-  
-  outdat$timestamp
-  as.Date.POSIXct(outdat$timestamp, c("%Y-%m-%d %h:00:00 PST"))
-  outdat$timestamp <- as.POSIXct(outdat$timestamp)
-  
-  sb <- c(seq(5, 50, 5))
-  # Get log feet to dispaly on left side
-  ddat <- dat %>% 
-    group_by(bin) %>% 
-    summarise(m_dist = mean(ln_distance)) %>% 
-    filter(bin %in% sb)
-  ddat
-  ddat$x <- as.POSIXct("2016-03-09 23:00:00")
-  
-  outdat <- filter(outdat, bin >= 5 & bin <= 50)
-  outdat$day <- day(outdat$timestamp)
-  a <- ifelse(outdat$day != 15, "black", "blue")
+dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
+dat <- dat %>% 
+  mutate(day = day(timestamp),
+         hour = hour(timestamp),
+         month = month(timestamp)) %>% 
+  filter(month == 3) %>%
+  filter(day >= 10 & day <= 20) %>% 
+  filter(distance != 0) %>% 
+  group_by(timestamp, vessel_A) %>% 
+  summarise(distance = mean(distance),
+            ln_distance = mean(log(1 + distance)))
 
-  
-  
-  fig2a <- ggplot(outdat, aes(x=timestamp, y=factor(bin))) + 
-    geom_tile(aes(fill = prob)) +
-    theme_tufte(14) +
-    annotate("text", x=as.POSIXct("2016-03-20 10:00:00"), y = 45, label='(A)', size = 5, color  = "white") +
-    labs(x="Day in March", y="Binned Distance (log km)", fill="P(d)") +
-    geom_vline(xintercept = 14) +
-    scale_x_datetime(date_breaks = "1 day",
-                     date_labels = "%d",
-                     labels = c(seq(10, 21, 1)),
-                     breaks = seq(10, 21, 1),
-                     expand = expand_scale(mult = c(0, 0))) +
-    scale_y_discrete(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50), 
-                     labels = round(ddat$m_dist, 1), 
-                     expand = c(0, 0)) +
-    scale_fill_gradientn(colours=rev(brewer.pal(11, "Spectral")), na.value = 'salmon') +
-    annotate("rect", xmin = as.POSIXct("2016-03-13 01:00:00"), 
-             xmax = as.POSIXct("2016-03-17 01:00:00"),  
-             ymin = 0, 
-             ymax = 47,
-             colour="white", alpha=0.1) +
-    annotate("text", x = as.POSIXct("2016-03-15 00:00:00"), y=45, label="Event Window", color='white') +
-    theme(legend.position = 'right',
-          legend.margin=margin(l = 0, unit='cm'),
-          panel.border = element_rect(colour = "grey", fill=NA, size=1),
-          panel.grid = element_blank(),
-          panel.background=element_rect(fill="#5E4FA2", colour="#5E4FA2")) +
-    guides(fill = guide_colorbar(label.hjust = unit(0, 'cm'),
-                                 frame.colour = "black",
-                                 barwidth = .5,
-                                 barheight = 10)) +
-    NULL
-  
-  fig2a
-  
+dat2$date <- paste0(year(dat2$timestamp), "-", month(dat2$timestamp), "-", day(dat2$timestamp), "-", hour(dat2$timestamp))
+
+cdat <- cut(dat$ln_distance, breaks = 50)
+
+dat$breaks <- cdat 
+dat$bin <- as.numeric(dat$breaks)
+
+
+char <- unique(cdat)
+retdat <- data.frame()
+for (j in char){
+  ldat <- data.frame(a = as.numeric(strsplit(gsub("\\[|\\]|\\(|\\)", "", j), ",")[[1]][1]),
+                     b = as.numeric(strsplit(gsub("\\[|\\]|\\(|\\)", "", j), ",")[[1]][2]))
+  retdat <- rbind(retdat, ldat)
+}
+
+outdat <- dat %>% 
+  group_by(timestamp) %>% 
+  mutate(nvessels = n()) %>% 
+  group_by(timestamp, bin, nvessels) %>% 
+  summarise(nbin_vessels = n()) %>% 
+  mutate(prob = nbin_vessels/nvessels) %>% 
+  ungroup()
+
+outdat %>% 
+  group_by(timestamp) %>% 
+  summarise(sum = sum(prob))
+
+outdat$day <- day(outdat$timestamp)
+
+
+outdat$timestamp
+as.Date.POSIXct(outdat$timestamp, c("%Y-%m-%d %h:00:00 PST"))
+outdat$timestamp <- as.POSIXct(outdat$timestamp)
+
+sb <- c(seq(5, 50, 5))
+# Get log feet to dispaly on left side
+ddat <- dat %>% 
+  group_by(bin) %>% 
+  summarise(m_dist = mean(ln_distance)) %>% 
+  filter(bin %in% sb)
+ddat
+ddat$x <- as.POSIXct("2016-03-09 23:00:00")
+
+outdat <- filter(outdat, bin >= 5 & bin <= 50)
+outdat$day <- day(outdat$timestamp)
+a <- ifelse(outdat$day != 15, "black", "blue")
+
+
+
+fig2a <- ggplot(outdat, aes(x=timestamp, y=factor(bin))) + 
+  geom_tile(aes(fill = prob)) +
+  theme_tufte(14) +
+  annotate("text", x=as.POSIXct("2016-03-20 10:00:00"), y = 45, label='(A)', size = 5, color  = "white") +
+  labs(x="Day in March", y="Binned Distance (log km)", fill="P(d)") +
+  geom_vline(xintercept = 14) +
+  scale_x_datetime(date_breaks = "1 day",
+                   date_labels = "%d",
+                   labels = c(seq(10, 21, 1)),
+                   breaks = seq(10, 21, 1),
+                   expand = expand_scale(mult = c(0, 0))) +
+  scale_y_discrete(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50), 
+                   labels = round(ddat$m_dist, 1), 
+                   expand = c(0, 0)) +
+  scale_fill_gradientn(colours=rev(brewer.pal(11, "Spectral")), na.value = 'salmon') +
+  annotate("rect", xmin = as.POSIXct("2016-03-13 01:00:00"), 
+           xmax = as.POSIXct("2016-03-17 01:00:00"),  
+           ymin = 0, 
+           ymax = 47,
+           colour="white", alpha=0.1) +
+  annotate("text", x = as.POSIXct("2016-03-15 00:00:00"), y=45, label="Event Window", color='white') +
+  theme(legend.position = 'right',
+        legend.margin=margin(l = 0, unit='cm'),
+        panel.border = element_rect(colour = "grey", fill=NA, size=1),
+        panel.grid = element_blank(),
+        panel.background=element_rect(fill="#5E4FA2", colour="#5E4FA2")) +
+  guides(fill = guide_colorbar(label.hjust = unit(0, 'cm'),
+                               frame.colour = "black",
+                               barwidth = .5,
+                               barheight = 10)) +
+  NULL
+
+fig2a
+
 
 
 
@@ -384,61 +243,61 @@ for (i in unique(movdat$timestamp)){
 
 # Figure 2 (B) 
 
-  dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day_2016-03-01_2016-04-01.feather"))
+dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day_2016-03-01_2016-04-01.feather"))
+
+dat$day <- seq(1, nrow(dat), 1)
+pdat <- gather(dat, key = day, value = value)
+
+pdat$day <- as.numeric(pdat$day) + 1
+pdat$day2 <- seq(1, length(unique(pdat$day)))
+
+fig2b <- ggplot(pdat, aes(x=day, y=day2)) + 
+  theme_tufte(14) + 
+  geom_tile(aes(fill=value)) +
+  labs(y="Day in March", x="Day in March", fill="JSD \nMetric") +
+  # scale_fill_gradient(low='white', high='red') +
+  scale_fill_gradientn(colours=rev(brewer.pal(11, "Spectral"))) +
+  scale_y_continuous(trans = "reverse", 
+                     breaks = c(1, 5, 10, 15, 20, 25, 31),
+                     labels = c(1, 5, 10, 15, 20, 25, 31), 
+                     expand=expand_scale(mult = c(0, 0))) +
+  scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 25, 31), labels = c(1, 5, 10, 15, 20, 25, 31), expand=expand_scale(mult = c(0, 0))) +
+  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "black") +
+  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "black") +
+  annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "black") +
+  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "black") +
   
-  dat$day <- seq(1, nrow(dat), 1)
-  pdat <- gather(dat, key = day, value = value)
-  
-  pdat$day <- as.numeric(pdat$day) + 1
-  pdat$day2 <- seq(1, length(unique(pdat$day)))
-  
-  fig2b <- ggplot(pdat, aes(x=day, y=day2)) + 
-    theme_tufte(14) + 
-    geom_tile(aes(fill=value)) +
-    labs(y="Day in March", x="Day in March", fill="JSD \nMetric") +
-    # scale_fill_gradient(low='white', high='red') +
-    scale_fill_gradientn(colours=rev(brewer.pal(11, "Spectral"))) +
-    scale_y_continuous(trans = "reverse", 
-                       breaks = c(1, 5, 10, 15, 20, 25, 31),
-                       labels = c(1, 5, 10, 15, 20, 25, 31), 
-                       expand=expand_scale(mult = c(0, 0))) +
-    scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 25, 31), labels = c(1, 5, 10, 15, 20, 25, 31), expand=expand_scale(mult = c(0, 0))) +
-    annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "black") +
-    annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "black") +
-    annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "black") +
-    annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "black") +
-    
-    # Cluster 1
-    annotate("segment", x=7, xend=7, y=0.5, yend=7, color = "black") +
-    annotate("segment", x=0.5, xend=7, y=7, yend=7, color = "black") +
-    # 
-    # # Cluster 2
-    annotate("segment", x=7, xend=22, y=7, yend=7, color = "black") +
-    annotate("segment", x=7, xend=7, y=7, yend=22, color = "black") +
-    annotate("segment", x=22, xend=22, y=7, yend=22, color = "black") +
-    annotate("segment", x=7, xend=22, y=22, yend=22, color = "black") +
-    # #
-    # # Cluster 3
-    annotate("segment", x=22, xend=22, y=22, yend=31.5, color = "black") +
-    annotate("segment", x=22, xend=31.5, y=22, yend=22, color = "black") +
-    # 
-    annotate("text", x=4, y = 1, label='Cluster 1', size = 3) +
-    annotate("text", x=19, y = 8, label='Cluster 2', size = 3) +
-    annotate("text", x=29, y = 23, label='Cluster 3', size = 3) +
-    annotate("text", x=30, y = 1.5, label='(B)', size = 5, color="white") +
-    guides(fill = guide_colorbar(label.hjust = unit(0, 'cm'),
-                                 frame.colour = "black",
-                                 barwidth = .5,
-                                 barheight = 12)) +
-    coord_equal() +
-    NULL
-  fig2b
+  # Cluster 1
+  annotate("segment", x=7, xend=7, y=0.5, yend=7, color = "black") +
+  annotate("segment", x=0.5, xend=7, y=7, yend=7, color = "black") +
+  # 
+  # # Cluster 2
+  annotate("segment", x=7, xend=22, y=7, yend=7, color = "black") +
+  annotate("segment", x=7, xend=7, y=7, yend=22, color = "black") +
+  annotate("segment", x=22, xend=22, y=7, yend=22, color = "black") +
+  annotate("segment", x=7, xend=22, y=22, yend=22, color = "black") +
+  # #
+  # # Cluster 3
+  annotate("segment", x=22, xend=22, y=22, yend=31.5, color = "black") +
+  annotate("segment", x=22, xend=31.5, y=22, yend=22, color = "black") +
+  # 
+  annotate("text", x=4, y = 1, label='Cluster 1', size = 3) +
+  annotate("text", x=19, y = 8, label='Cluster 2', size = 3) +
+  annotate("text", x=29, y = 23, label='Cluster 3', size = 3) +
+  annotate("text", x=30, y = 1.5, label='(B)', size = 5, color="white") +
+  guides(fill = guide_colorbar(label.hjust = unit(0, 'cm'),
+                               frame.colour = "black",
+                               barwidth = .5,
+                               barheight = 12)) +
+  coord_equal() +
+  NULL
+fig2b
   
 ggdraw() + draw_plot(fig2a, 0, .50, height = .50, width = 1) +
   draw_plot(fig2b, 0.01, -.25, height=1, width = 1)
 
-# ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2_log.png", width = 5, height = 8)
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2_log.pdf", width = 5, height = 8)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2.png", width = 5, height = 8)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2.pdf", width = 5, height = 8)
 
 
 
@@ -499,7 +358,6 @@ fig3a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) +
   labs(x = "Dimension 1", 
        y= "Dimension 2", 
        color = "Speed", 
-       # title = "Non-metric Multidimensional Scaling of JS-Distance \n March 1 - 31 2016 (Clustered by hour using k-medoids)",
        shape = "Cluster") +
   theme(#aspect.ratio=1,
     legend.position = c(.5, .9),
@@ -511,8 +369,8 @@ fig3a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) +
     plot.title = element_text(hjust = 0.5)) +
   guides(color = guide_colorbar(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5),
          shape = guide_legend(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5)) +
-  annotate("text", x = -0.09, y = -0.071, label = "k=2", size=2.5) +
-  annotate("text", x = -0.09, y = -0.075, label = paste0("stress=", round(stress/100, 3)), size=2.5) +
+  annotate("text", x = -0.08, y = -0.071, label = "k=2", size=2.5) +
+  annotate("text", x = -0.08, y = -0.075, label = paste0("stress=", round(stress/100, 2)), size=2.5) +
   NULL
 
 fig3a
@@ -523,11 +381,11 @@ fig3a
 fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
   geom_point(size=.8) +
   labs(x="Day in March", y="Speed of JS-Distance Divergence", color = "Cluster") +
-  annotate("text", x=24*31, y = 0.22, label='(B)', size = 5, color="black") +
+  annotate("text", x=24*31, y = 0.245, label='(B)', size = 5, color="black") +
   theme_tufte(13) +
   geom_vline(xintercept = 12*24, color='grey') +
   geom_vline(xintercept = 18*24, color='grey') +
-  annotate('text', x=15*24, y=0.22, label = "Event \n Window", size = 3) +
+  annotate('text', x=15*24, y=0.24, label = "Event \n Window", size = 3) +
   theme(legend.position = c(.15, .2),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),
@@ -542,101 +400,10 @@ fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey")
 
-# theme(legend.position = "none",
-#       legend.box.background = element_rect(colour = "grey"),
-#       legend.title = element_blank(),
-#       legend.key = element_rect(fill = NA, color = NA),
-#       legend.text=element_text(size=8))
-
 fig3b
-
-# ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3_b.png", width = 6, height = 4)
 
 ggdraw() + draw_plot(fig3a, 0, 0, height = 1, width = .5) +
   draw_plot(fig3b, .50, 0, height= 1, width = .5)
 
-# ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.png", width = 10, height = 4)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.png", width = 10, height = 4)
 ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.pdf", width = 10, height = 4)
-
-
-#------------------------------------------------------------------------
-# 3-D plot
-dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-01_2016-03-31.feather"))
-
-d <- as.matrix(dat)
-fit <- isoMDS(d, k=3)
-stress <- fit$stress
-isoMDS_dat <- data.frame(x = fit$points[, 1], y = fit$points[, 2], z = fit$points[, 3])
-
-# Hours
-isoMDS_dat$row <- seq(1, nrow(isoMDS_dat))
-
-isoMDS_dat <- left_join(isoMDS_dat, clustdat, by = 'row')
-
-
-# 3-axis
-isoMDS_dat$dist <- sqrt(((isoMDS_dat$x - isoMDS_dat$y - isoMDS_dat$z)^2 + (lead(isoMDS_dat$x) - lead(isoMDS_dat$y) - lead(isoMDS_dat$z))^2))
-isoMDS_dat$speed <- isoMDS_dat$dist/1
-
-# Remove last obs
-isoMDS_dat <- filter(isoMDS_dat, !is.na(cluster) | !is.na(dist))
-
-
-# isoMDS_dat$event <- ifelse(isoMDS_dat$row >= 336, ifelse(isoMDS_dat$row <= 360, 1, 0), 0)
-fig4a <- ggplot(isoMDS_dat, aes(x=x, y=y, z=z, color=speed, shape = factor(cluster))) + 
-  scale_color_gradientn(colours=brewer.pal(7,"YlGnBu")) +
-  labs(x = "Dimension 1", y= "Dimension 2", 
-       color = "Speed", 
-       # title = "Non-metric Multidimensional Scaling of JS-Distance \n March 1 - 31 2016 (Clustered by hour using k-medoids)",
-       shape = "Cluster") +
-  theme_void() +
-  theme_tufte(13) +
-  axes_3D() +
-  stat_3D() +
-  theme(#aspect.ratio=1,
-        legend.position = c(.5, .9),
-        legend.box = "horizontal",
-        legend.direction = 'horizontal',
-        legend.justification = 'center',
-        legend.title=element_text(size=8),
-        legend.text = element_text(size=8),
-        plot.title = element_text(hjust = 0.5)) +
-  guides(color = guide_colorbar(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5),
-         shape = guide_legend(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5)) +
-  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
-  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
-  annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
-  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
-  annotate("text", x = -.25, y = -0.32, label = paste0("stress=", round(stress/100, 3)), size=2.5) +
-  annotate("text", x = -.25, y = -0.29, label = "k=3", size=2.5) +
-  # coord_equal(ratio = 2) +
-  NULL
-fig4a
-
-fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
-  geom_point(size=.8) +
-  labs(x="Day in March", y="Speed of JS-Distance Divergence", color = "Cluster") +
-  theme_tufte(13) +
-  theme(legend.position = c(.5, .95),
-        legend.box = "horizontal",
-        legend.direction = 'horizontal',
-        legend.justification = 'center',
-        legend.title=element_text(size=8),
-        legend.text = element_text(size=8),
-        plot.title = element_text(hjust = 0.5)) +
-  # scale_x_continuous(breaks = seq(1, length(isoMDS_dat$x), 24), labels = seq(1, 31, 1)) +
-  scale_x_continuous(breaks = c(1, 5*24, 10*24, 15*24, 20*24, 25*24, 31*24), labels = c(1, 5, 10, 15, 20, 25, 31)) +
-  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
-  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
-  annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
-  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
-  NULL
-
-fig5b
-
-ggdraw() + draw_plot(fig4a, 0, 0, height = 1, width = .5) +
-  draw_plot(fig4b, .50, 0, height= 1, width = .5)
-
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure4.pdf", width = 10, height = 4)
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure4.png", width = 10, height = 4)
-

@@ -85,7 +85,7 @@ distMatrix_dh.to_feather(
 dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2018-01-15_2018-02-15.feather')
 
 # Day
-# NN = 5
+# NN = 1
 distMatrix, distArray = dm.d_matrix(dat, interval='day', NN=1)
 pdat3 = k_medoids(distMatrix, interval='day', init_medoids=[7, 18, 25])
 
@@ -98,7 +98,7 @@ distMatrix.to_feather(
 
 
 # Day by hour
-# NN = 5
+# NN = 1
 distMatrix_dh, distArray_dh = dm.d_matrix(dat, interval='dayhour', NN=1)
 pdat4 = k_medoids(distMatrix_dh, interval='dayhour',
                   init_medoids=[168, 432, 600])
@@ -116,7 +116,7 @@ distMatrix_dh.to_feather(
 # ------------------------------------------------------
 # Puerto Madryn February 01 to March 10 2018 Region 1
 # Import data
-dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2018-02-01_2018-03-10.feather')
+dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2018-02-05_2018-03-10.feather')
 
 # Day
 # NN = 5
@@ -128,7 +128,7 @@ distMatrix.columns = distMatrix.columns.astype(str)
 
 # h_cluster(distArray)
 distMatrix.to_feather(
-    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day_2018-02-01_2018-03-10.feather')
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day_2018-02-05_2018-03-10.feather')
 
 
 # Day by hour
@@ -143,7 +143,7 @@ distMatrix_dh.columns = distMatrix_dh.columns.astype(str)
 
 # Save distance matrix
 distMatrix_dh.to_feather(
-    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2018-02-01_2018-03-10.feather')    
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2018-02-05_2018-03-10.feather')    
 
 
 #----------------------------
@@ -222,7 +222,7 @@ distMatrix_dh.to_feather(
 # ------------------------------------------------------
 # Puerto Madryn February 01 to March 10 2018 Region 1
 # Import data
-dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2018-02-01_2018-03-10.feather')
+dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2018-02-05_2018-03-10.feather')
 
 # Day
 # NN = 5
@@ -234,7 +234,7 @@ distMatrix.columns = distMatrix.columns.astype(str)
 
 # h_cluster(distArray)
 distMatrix.to_feather(
-    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day_2018-02-01_2018-03-10.feather')
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day_2018-02-05_2018-03-10.feather')
 
 
 # Day by hour
@@ -249,4 +249,4 @@ distMatrix_dh.columns = distMatrix_dh.columns.astype(str)
 
 # Save distance matrix
 distMatrix_dh.to_feather(
-    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2018-02-01_2018-03-10.feather')    
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2018-02-05_2018-03-10.feather')    
