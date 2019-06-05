@@ -81,7 +81,7 @@ Figure S1: Heatmap of Nearest Neighbor Distances and JSD Metric
 
 <p align="center">
 
-<img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s1.png?raw=true">
+<img align="center" width="500" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s1.png?raw=true">
 
 Figure S2: Dimension Reduction Results and Speed of JSD Divergence
 
@@ -93,7 +93,7 @@ Figure S3: Heatmap of Nearest Neighbor Distances and JSD Metric
 
 <p align="center">
 
-<img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s3.png?raw=true">
+<img align="center" width="500" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s3.png?raw=true">
 
 Figure S4: Dimension Reduction Results and Speed of JSD Divergence 
 
