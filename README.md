@@ -1,6 +1,6 @@
 # Anticipating and Detection Illegal Maritime Activities from Anomalous Multiscale Fleet Behavior
 
-### Watson and Woodill or Woodill and Watson
+### James R. Watson and A. John Woodill
 
 #### College of Earth, Ocean and Atmospheric Sciences, Oregon State University
 
@@ -40,13 +40,9 @@ https://www.reuters.com/article/us-argentina-china-fishing/argentina-calls-for-c
 
 **Files**
 
-* `supp_figures/` - supplemental main figures
-
 * `1-Data-step.py` - process pre-processed Global Fishing Watch (GFW) AIS data (not available).
 
-* `2-Cluster-Analysis-March_15_2016.py` - K-medoids clustering analysis for March 15, 2016 event.
-
-* `3-Cluster-Analysis-Robustness.py` - spatial and temporal checks
+* `2-Cluster-Analysis.py` - K-medoids clustering analysis for all events.
 
 * `4-Figures.R` - main figures from the analysis.
 
@@ -59,34 +55,51 @@ https://www.reuters.com/article/us-argentina-china-fishing/argentina-calls-for-c
 
 ### **Figures**
 
-**Figure 1: A) Map of the region with AIS points. B) NN distances for one vessel. C) Average NN distance distribution for a fleet.**
-
+Figure 1: Map of Patagonia Shelf and Distribution of Nearest Neighbor Distances
 <p align="center">
 
 <img align="center" width="500" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure1.png?raw=true">
 
-Figure 2: A) Heatmap time series of average NN distance distributions. B) Heatmap of JS divergence between hourly average NN distance distributions (row/cols ordered by clusters)
+Figure 2: Heatmap of Nearest Neighbor Distances and JSD Metric
 
 <p align="center">
 
-<img align="center" width="500" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure2_log.png?raw=true">
+<img align="center" width="500" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure2.png?raw=true">
 
 
-Figure 3: nMDS of JS-Divergence (2-dimensions)
+Figure 3: Dimension Reduction Results and Speed of JSD Divergence
 
 <p align="center">
 
 <img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure3.png?raw=true">
 
-Figure 4: nMDS of JS-Divergence (3-dimensions)
-
-<p align="center">
-
-<img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure4.png?raw=true">
-
 -------------
 
 ### *Supporting Figures*
+
+Figure S1: Heatmap of Nearest Neighbor Distances and JSD Metric
+
+<p align="center">
+
+<img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s1.png?raw=true">
+
+Figure S2: Dimension Reduction Results and Speed of JSD Divergence
+
+<p align="center">
+
+<img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s2.png?raw=true">
+
+Figure S3: Heatmap of Nearest Neighbor Distances and JSD Metric
+
+<p align="center">
+
+<img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s3.png?raw=true">
+
+Figure S4: Dimension Reduction Results and Speed of JSD Divergence 
+
+<p align="center">
+
+<img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s4.png?raw=true">
 
 Leading JS-Divergence (`t`, `t+1`)
 

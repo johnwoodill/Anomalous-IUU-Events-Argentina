@@ -31,7 +31,7 @@ dat$min <- stringr::str_pad(dat$min, 2, side = "left", pad = 0)
 
 dat$ln_distance <- log(1 + dat$distance)
 
-fig1_dat <- filter(dat, month == "03" & day == "05" & hour == "12" & NN <= 3)
+fig1_dat <- filter(dat, month == "03" & day == "15" & hour == "12" & NN <= 3)
 
 # Puerto Madryn
 #-42.7694° S, -65.0317° W
@@ -132,7 +132,7 @@ ggdraw() + draw_plot(map2, 0, .175, height = 1, width = 1) +
   draw_plot(map1, .75, .335, height = .26, width = .25) +
   draw_plot(fig1b, 0, 0, height = .385, width = 1)
 
-ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.pdf", width = 6, height = 7)
+ggplot2::ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.pdf", width = 6, height = 7)
 ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png", width = 6, height = 7)
 
 #------------------------------------------
