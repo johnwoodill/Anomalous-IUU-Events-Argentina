@@ -8,7 +8,7 @@
 
 **Repo Description**
 
-The following repo provides reproducible results for the paper, "Anticipating and Detection Illegal Maritime Activities from Anomalous Multiscale Fleet Behavior". We utilize a novel  K-medoids classification algorithm to disentangle a specific pre, peri, and post specific IUU event in the Puerto Madryn Argentina region. Our main findings show multiscale spatial anomalies reveal a specific IUU event (cluster 2) in Puerto Madryn, Argentina. We also show the behavior of vessels is most similar during IUU events and less so outside the event window.
+The following repo provides reproducible results for the paper, "Anticipating and Detection Illegal Maritime Activities from Anomalous Multiscale Fleet Behavior". We utilize a K-medoids classification algorithm to disentangle a specific pre, peri, and post specific IUU event in the Puerto Madryn Argentina region. We then measure the speed of Jensen-Shannon Divergence metric to identify a rate of change of anomalous spatil behavior during the 30 day window of the IUU event. Our findings show multiscale spatial anomalies reveal a specific IUU event (cluster 2) in Puerto Madryn, Argentina. We also show the behavior of vessels is most similar during IUU events and less so outside the event window.
 
 -------------
 
