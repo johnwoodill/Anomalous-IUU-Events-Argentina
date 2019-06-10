@@ -9,6 +9,7 @@ library(RColorBrewer)
 library(MASS)
 library(plotly)
 library(gg3D)
+library(marmap)
 
 
 # Second Event 
@@ -555,3 +556,95 @@ ggdraw() + draw_plot(fig4a, 0, 0, height = 1, width = .5) +
 ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s4.png", width = 10, height = 4)
 ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s4.pdf", width = 10, height = 4)
 
+
+#--------------------------------------------------------------
+# Animated Plot
+bat <- getNOAA.bathy(-68, -51, -48, -39, res = 1, keep = TRUE)
+dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
+dat$month <- month(dat$timestamp)
+dat$day <- day(dat$timestamp)
+dat$hour <- hour(dat$timestamp)
+dat$year <- year(dat$timestamp)
+dat$min <- minute(dat$timestamp)
+dat$ln_distance <- log(1 + dat$distance)
+
+dat$month <- stringr::str_pad(dat$month, 2, side = "left", pad = 0)
+dat$day <- stringr::str_pad(dat$day, 2, side = "left", pad = 0)
+dat$hour <- stringr::str_pad(dat$hour, 2, side = "left", pad = 0)
+dat$min <- stringr::str_pad(dat$min, 2, side = "left", pad = 0)
+
+movdat <- dat
+
+# movdat <- filter(movdat, vessel_A_lon >= -64 & vessel_A_lon <= -51)
+# movdat <- filter(movdat, vessel_A_lat >= -48 & vessel_A_lat <= -39)
+# 
+# movdat <- filter(movdat, vessel_B_lon >= -64 & vessel_B_lon <= -51)
+# movdat <- filter(movdat, vessel_B_lat >= -48 & vessel_B_lat <= -39)
+
+NN_max <- 3
+
+movdat <- filter(movdat, NN <= NN_max)
+movdat <- filter(movdat, month == "03")
+
+#i = movdat$timestamp[100000]
+i = "2016-03-15 12:00:00"
+i = "2016-03-15 19:00:00"
+i = "2016-03-29 00:00:00"
+
+for (i in unique(movdat$timestamp)){
+  
+  subdat <- filter(movdat, timestamp == i)
+  
+  date_ <- paste0(subdat$year[1], "-", subdat$month[1], "-", subdat$day[1], " ", subdat$hour[1], ":", subdat$min[1], ":00")
+  date_
+  
+  #  #C6E0FC
+  
+  movmap <- 
+    # ggplot(bat, aes(x, y, z)) +
+    autoplot(bat, geom = c("raster", "contour")) +
+    geom_raster(aes(fill=z)) +
+    geom_contour(aes(z = z), colour = "white", alpha = 0.05) +
+    scale_fill_gradientn(values = scales::rescale(c(-6600, 0, 1, 1500)),
+                         colors = c("lightsteelblue4", "lightsteelblue2", "#C6E0FC", 
+                                    "grey50", "grey70", "grey85")) +
+    labs(x=NULL, y=NULL, color="km") +
+    geom_segment(data=subdat, aes(x=vessel_A_lon, xend=vessel_B_lon, y=vessel_A_lat, yend=vessel_B_lat, color=distance), size = 0.1) +
+    geom_segment(data=subdat, aes(x=vessel_B_lon, xend=vessel_A_lon, y=vessel_B_lat, yend=vessel_A_lat, color=distance), size = 0.1) +
+    geom_point(data=subdat, aes(x=vessel_A_lon, y=vessel_A_lat), size = .5, color='red', alpha=0.7) +
+    annotate("text", x=-53.75, y = -39.25, label=date_, size = 4, color='black', fontface=2) +
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank(),
+          legend.direction = 'vertical',
+          legend.justification = 'center',
+          legend.position = c(.95, 0.24),
+          legend.margin=margin(l = 0, unit='cm'),
+          legend.text = element_text(size=10),
+          legend.title = element_text(size=12),
+          panel.grid = element_blank()) +
+    scale_color_gradientn(colours=brewer.pal(9, "YlOrRd"), limits=c(0, 200)) +
+    
+    # Legend up top
+    guides(fill = FALSE,
+           color = guide_colorbar(title.hjust = unit(1.1, 'cm'),
+                                  title.position = "top",
+                                  frame.colour = "black",
+                                  barwidth = .5,
+                                  barheight = 7,
+                                  label.position = 'left')) +
+    annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "black", size=1) + #Bottom
+    annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "black", size=1) + # Left
+    annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "black", size=1) + # Right
+    annotate("segment", x=-Inf, xend=Inf, y=Inf, yend=Inf, color = "black", size=1) + # Top
+    # scale_y_continuous(expand=c(0,0)) +
+    # scale_x_continuous(expand=c(0,0)) +
+    NULL
+  # movmap
+  
+  
+  ggsave(filename = paste0("~/Projects/Anomalous-IUU-Events-Argentina/figures/animated_fig/hourly_figs/", date_, ".png"), width = 6, height = 4, plot = movmap)
+}
