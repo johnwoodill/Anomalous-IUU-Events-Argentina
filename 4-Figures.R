@@ -15,7 +15,7 @@ GAPI_Key <- file("~/Projects/Anomalous-IUU-Events-Argentina/Google_api_key.txt",
 GAPI_Key <- readLines(GAPI_Key)
 register_google(key=GAPI_Key)
 
-#------------------------------------------
+#--------------------------------------------------------------------------------------------
 # Figure 1: Map, NN, and distr
 dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
 dat$month <- month(dat$timestamp)
@@ -135,7 +135,7 @@ ggdraw() + draw_plot(map2, 0, .175, height = 1, width = 1) +
 ggplot2::ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.pdf", width = 6, height = 7)
 ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png", width = 6, height = 7)
 
-#------------------------------------------
+#--------------------------------------------------------------------------------------------
 # Figure 2: Distance (log transformation))
 
 # (A)
@@ -239,8 +239,6 @@ fig2a
 
 
 
-# (B)
-
 # Figure 2 (B) 
 
 dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day_2016-03-01_2016-04-01.feather"))
@@ -301,8 +299,7 @@ ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2.pdf", width = 
 
 
 
-
-#------------------------------------------
+#--------------------------------------------------------------------------------------------
 # Figure 3 - time-series of the trailing rate of change in JS divergence as an index of behavioral change
 
 dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-01_2016-03-31.feather"))
@@ -386,7 +383,7 @@ fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   geom_vline(xintercept = 12*24, color='grey') +
   geom_vline(xintercept = 18*24, color='grey') +
   annotate('text', x=15*24, y=0.24, label = "Event \n Window", size = 3) +
-  theme(legend.position = c(.15, .2),
+  theme(legend.position = c(.12, .2),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),
         legend.direction = 'vertical',
@@ -398,12 +395,20 @@ fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
   annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
-  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey")
+  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
+  scale_color_viridis(discrete=TRUE) +
+  NULL
 
 fig3b
 
-ggdraw() + draw_plot(fig3a, 0, 0, height = 1, width = .5) +
-  draw_plot(fig3b, .50, 0, height= 1, width = .5)
+# Horizontal align
+# ggdraw() + draw_plot(fig3a, 0, 0, height = 1, width = .5) +
+#  draw_plot(fig3b, .50, 0, height= 1, width = .5)
 
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.png", width = 10, height = 4)
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.pdf", width = 10, height = 4)
+# Verticle align
+ggdraw() + draw_plot(fig3a, 0, .50, height = .5, width = 1) + 
+  draw_plot(fig3b, 0, 0, height= .5, width = 1)
+
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.png", width = 6, height = 8)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.pdf", width = 6, height = 8)
+

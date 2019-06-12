@@ -32,8 +32,3 @@ siuu.lat2 = -39
 # https://www.reuters.com/article/us-argentina-china-fishing/argentina-calls-for-capture-of-five-chinese-fishing-boats-idUSKCN1GK35T
 siuu.compileData('2018-02-05', '2018-03-10', 1, parallel=True, ncores=20)
 
-# beg_date = '2016-03-14'
-# end_date = '2016-03-16'
-# region = 1
-# parallel=True
-# ncores=6
