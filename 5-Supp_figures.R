@@ -615,7 +615,9 @@ jsd_dat2 <- jsd_dat %>%
 
 jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
 
-s5a <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
+jsd_s5a <- jsd_dat2
+
+s5a <-ggplot(jsd_s5a, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
   geom_point(alpha=0.7) +
   labs(x="Day in March", y="JS-Distance (t, t+1)") +
@@ -670,7 +672,9 @@ jsd_dat2 <- jsd_dat %>%
 
 jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
 
-s5b <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
+jsd_s5b <- jsd_dat2
+
+s5b <-ggplot(jsd_s5b, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
   geom_point(alpha=0.7) +
   labs(x="Day in Jan-Feb", y="JS-Distance (t, t+1)") +
@@ -725,7 +729,9 @@ jsd_dat2 <- jsd_dat %>%
 
 jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
 
-s5c <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
+jsd_s5c <- jsd_dat2
+
+s5c <-ggplot(jsd_s5c, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
   geom_point(alpha=0.7) +
   labs(x="Day in Feb-Mar", y="JS-Distance (t, t+1)") +
