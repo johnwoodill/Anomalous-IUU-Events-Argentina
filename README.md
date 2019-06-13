@@ -117,5 +117,5 @@ Leading JS-Divergence (`t`, `t+1`)
 
 <p align="center">
 
-<img align="center" width="500" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s5.png?raw=true">
+<img align="center" width="800" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/figure_s5.png?raw=true">
 
