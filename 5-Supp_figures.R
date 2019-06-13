@@ -257,7 +257,7 @@ fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   geom_vline(xintercept = 14*24, color='grey') +
   geom_vline(xintercept = 20*24, color='grey') +
   annotate('text', x=17*24, y=0.205, label = "Event \n Window") +
-  theme(legend.position = c(.12, .21),
+  theme(legend.position = c(.10, .21),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),
         legend.direction = 'vertical',
