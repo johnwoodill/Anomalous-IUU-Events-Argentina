@@ -233,20 +233,20 @@ fig4a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) +
     plot.title = element_text(hjust = 0.5)) +
   guides(color = guide_colorbar(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5),
          shape = guide_legend(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5)) +
-  annotate("text", x = -0.09, y = -0.071, label = "k=2", size=2.5) +
-  annotate("text", x = -0.09, y = -0.075, label = paste0("stress=", round(stress/100, 2)), size=2.5) +
+  annotate("text", x = -0.09, y = -0.065, label = "k=2", size=4) +
+  annotate("text", x = -0.09, y = -0.075, label = paste0("stress=", round(stress/100, 2)), size=4) +
   NULL
 fig4a
 
 
 fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
-  geom_point(size=.8) +
+  geom_point(size=1.5, alpha = 0.7) +
   labs(x="Day of Jan-Feb", y="Speed of JS-Distance Divergence", color = "Cluster") +
-  theme_tufte(11) +
+  theme_tufte(13) +
   annotate("text", x=24*32, y = 0.21, label='(B)', size = 5, color="black") +
   geom_vline(xintercept = 14*24, color='grey') +
   geom_vline(xintercept = 20*24, color='grey') +
-  annotate('text', x=17*24, y=0.21, label = "Event \n Window", size = 3) +
+  annotate('text', x=17*24, y=0.21, label = "Event \n Window") +
   theme(legend.position = c(.12, .2),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),
@@ -261,8 +261,8 @@ fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
-  scale_color_viridis(discrete=TRUE) 
-
+  scale_color_manual(breaks = c("1", "2", "3"),
+                     values = c("#440154FF", "#21908CFF", "darkorange"))
 fig4b
 
 
@@ -492,7 +492,7 @@ event_day <- filter(isoMDS_dat, row >= 17*24 & row <= 18*24)
 fig4a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) + geom_point() +
   # geom_point(data=event_day, aes(x, y), color='red') +
   annotate("text", x=0.12, y = 0.10, label='(A)', size = 5, color="black") +
-  theme_tufte(11) +
+  theme_tufte(13) +
   scale_color_gradientn(colours=brewer.pal(7,"YlGnBu")) +
   annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
   annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
@@ -512,21 +512,21 @@ fig4a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) +
     plot.title = element_text(hjust = 0.5)) +
   guides(shape = guide_legend(order = 1, title.position = 'top', title.hjust = 0.5, barheight = .5),
          color = guide_colorbar(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5)) +
-  annotate("text", x = -0.09, y = -0.068, label = "k=2", size=2.5) +
-  annotate("text", x = -0.09, y = -0.075, label = paste0("stress=", round(stress/100, 2)), size=2.5) +
+  annotate("text", x = -0.09, y = -0.065, label = "k=2", size=4) +
+  annotate("text", x = -0.09, y = -0.075, label = paste0("stress=", round(stress/100, 2)), size=4) +
   # coord_equal() +
   NULL
 
 fig4a
 
 fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
-  geom_point(size=.8) +
+  geom_point(size=1, alpha = 0.7) +
   labs(x="Day of Feb-March", y="Speed of JS-Distance Divergence", color = "Cluster") +
-  theme_tufte(11) +
+  theme_tufte(13) +
   annotate("text", x=24*34, y = 0.23, label='(B)', size = 5, color="black") +
   geom_vline(xintercept = 13*24, color='grey') +
   geom_vline(xintercept = 19*24, color='grey') +
-  annotate('text', x=16*24, y=0.23, label = "Event \n Window", size = 3) +
+  annotate('text', x=16*24, y=0.23, label = "Event \n Window") +
   theme(legend.position = c(.12, .2),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),
@@ -541,8 +541,8 @@ fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
-  scale_color_viridis(discrete=TRUE) 
-  
+  scale_color_manual(breaks = c("1", "2", "3"),
+                     values = c("#440154FF", "#21908CFF", "#FFA500"))  
 
 fig4b
 
@@ -644,3 +644,62 @@ for (i in unique(movdat$timestamp)){
   
   ggsave(filename = paste0("~/Projects/Anomalous-IUU-Events-Argentina/figures/animated_fig/hourly_figs/", date_, ".png"), width = 6, height = 4, plot = movmap)
 }
+
+
+#--------------------------------------------------------------------------------------------
+# Figure S5 - JS-Distance t and t+1
+
+dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
+fig3 <- filter(dat, distance != 0)
+fig3 <- filter(fig3, NN <= 5)
+fig3$ln_distance <- log(1 + fig3$distance)
+fig3$month <- month(fig3$timestamp)
+fig3$day <- day(fig3$timestamp)
+fig3$hour <- hour(fig3$timestamp)
+
+fig3 <- filter(fig3, month == 3)
+
+jsd_dat <- data.frame()
+for (i in unique(fig3$timestamp)){
+  p <- filter(fig3, timestamp == i )
+  q <- filter(fig3, timestamp == i + 60*60) # Plus 1 hour (60 seconds * 60 minutes)
+  date = p$timestamp[1]
+  p <- p$distance
+  q <- q$distance
+  qmin <- length(q)
+  pmin <- length(p)
+  minobs <- min(qmin, pmin)
+  lst <- data.frame()
+  for (j in 1:10){
+    pp <- sample(p, minobs, replace = TRUE)
+    qq <- sample(q, minobs, replace = TRUE)
+    js <- JSD(qq, pp)
+    indat <- data.frame(js = sqrt(js))
+    lst <- rbind(lst, indat)
+  }
+  outdat <- data.frame(t = date, jsd_mean = mean(lst$js), jsd_sd = sd(lst$js))
+  jsd_dat <- rbind(jsd_dat, outdat)
+}
+
+jsd_dat$day <- day(jsd_dat$t)
+jsd_dat$hour <- hour(jsd_dat$t)
+jsd_dat2 <- jsd_dat %>% 
+  group_by(t) %>% 
+  summarise(jsd_mean = mean(jsd_mean))
+
+jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
+
+ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
+  theme_tufte(13) +
+  geom_point() +
+  labs(x="Day in March", y="JS-Distance (t, t+1)") +
+  theme(panel.border = element_rect(colour = "grey", fill=NA, size=1)) +
+  scale_x_continuous(breaks = c(1, 5*24, 10*24, 15*24, 20*24, 25*24, 31*24), labels = c(1, 5, 10, 15, 20, 25, 31)) +
+  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
+  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
+  annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
+  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
+  NULL
+
+
+

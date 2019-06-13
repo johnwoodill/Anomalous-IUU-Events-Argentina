@@ -312,6 +312,9 @@ ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2.pdf", width = 
 #--------------------------------------------------------------------------------------------
 # Figure 3 - time-series of the trailing rate of change in JS divergence as an index of behavioral change
 
+# Viridis colors
+# "#440154FF" "#21908CFF" "#FDE725FF"
+
 dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-01_2016-03-31.feather"))
 
 d <- as.matrix(dat)
@@ -376,8 +379,8 @@ fig3a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) +
     plot.title = element_text(hjust = 0.5)) +
   guides(color = guide_colorbar(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5),
          shape = guide_legend(order = 0, title.position = 'top', title.hjust = 0.5, barheight = .5)) +
-  annotate("text", x = -0.08, y = -0.071, label = "k=2", size=2.5) +
-  annotate("text", x = -0.08, y = -0.075, label = paste0("stress=", round(stress/100, 2)), size=2.5) +
+  annotate("text", x = -0.085, y = -0.065, label = "k=2", size=4) +
+  annotate("text", x = -0.085, y = -0.075, label = paste0("stress=", round(stress/100, 2)), size=4) +
   NULL
 
 fig3a
@@ -386,14 +389,14 @@ fig3a
 
 # Color by speed (distance from day to lead(day))
 fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
-  geom_point(size=.8) +
+  geom_point(size=1.5, alpha = 0.7) +
   labs(x="Day in March", y="Speed of JS-Distance Divergence", color = "Cluster") +
   annotate("text", x=24*31, y = 0.245, label='(B)', size = 5, color="black") +
   theme_tufte(13) +
   geom_vline(xintercept = 12*24, color='grey') +
   geom_vline(xintercept = 18*24, color='grey') +
-  annotate('text', x=15*24, y=0.24, label = "Event \n Window", size = 3) +
-  theme(legend.position = c(.12, .2),
+  annotate('text', x=15*24, y=0.24, label = "Event \n Window") +
+  theme(legend.position = c(.10, .2),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),
         legend.direction = 'vertical',
@@ -406,7 +409,9 @@ fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
-  scale_color_viridis(discrete=TRUE) +
+  #scale_color_viridis(discrete=TRUE) +
+  scale_color_manual(breaks = c("1", "2", "3"),
+                     values = c("#440154FF", "#21908CFF", "darkorange"))
   NULL
 
 fig3b
