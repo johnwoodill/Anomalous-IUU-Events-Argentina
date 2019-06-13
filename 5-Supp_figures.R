@@ -11,6 +11,16 @@ library(plotly)
 library(gg3D)
 library(marmap)
 
+JSD <- function(p, q){
+  pfun <- approxfun(density(p))
+  p <- pfun(p)/sum(pfun(p))
+  qfun <- approxfun(density(q))
+  q <- qfun(q)/sum(qfun(q))
+  m <- 0.5 * (p + q)
+  JS <- 0.5 * (sum(p * log(p / m)) + sum(q * log(q / m)))
+  return(JS)
+}
+
 
 #--------------------------------------------------------------------------------------------
 # Figure S1: Distance (log transformation))
@@ -246,8 +256,8 @@ fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   annotate("text", x=24*32, y = 0.21, label='(B)', size = 5, color="black") +
   geom_vline(xintercept = 14*24, color='grey') +
   geom_vline(xintercept = 20*24, color='grey') +
-  annotate('text', x=17*24, y=0.21, label = "Event \n Window") +
-  theme(legend.position = c(.12, .2),
+  annotate('text', x=17*24, y=0.205, label = "Event \n Window") +
+  theme(legend.position = c(.12, .21),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),
         legend.direction = 'vertical',
@@ -526,7 +536,7 @@ fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   annotate("text", x=24*34, y = 0.23, label='(B)', size = 5, color="black") +
   geom_vline(xintercept = 13*24, color='grey') +
   geom_vline(xintercept = 19*24, color='grey') +
-  annotate('text', x=16*24, y=0.23, label = "Event \n Window") +
+  annotate('text', x=16*24, y=0.225, label = "Event \n Window") +
   theme(legend.position = c(.12, .2),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),
@@ -652,12 +662,13 @@ for (i in unique(movdat$timestamp)){
 dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
 fig3 <- filter(dat, distance != 0)
 fig3 <- filter(fig3, NN <= 5)
+fig3 <- fig3 %>% 
+  group_by(timestamp, vessel_A) %>% 
+  summarise(distance = mean(distance))
 fig3$ln_distance <- log(1 + fig3$distance)
 fig3$month <- month(fig3$timestamp)
 fig3$day <- day(fig3$timestamp)
 fig3$hour <- hour(fig3$timestamp)
-
-fig3 <- filter(fig3, month == 3)
 
 jsd_dat <- data.frame()
 for (i in unique(fig3$timestamp)){
@@ -701,5 +712,117 @@ s5a <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
   NULL
 
+s5a
 
+dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2018-01-15_2018-02-15.feather'))
+fig3 <- filter(dat, distance != 0)
+fig3 <- filter(fig3, NN <= 5)
+fig3 <- fig3 %>% 
+  group_by(timestamp, vessel_A) %>% 
+  summarise(distance = mean(distance))
+fig3$ln_distance <- log(1 + fig3$distance)
+fig3$month <- month(fig3$timestamp)
+fig3$day <- day(fig3$timestamp)
+fig3$hour <- hour(fig3$timestamp)
 
+jsd_dat <- data.frame()
+for (i in unique(fig3$timestamp)){
+  p <- filter(fig3, timestamp == i )
+  q <- filter(fig3, timestamp == i + 60*60) # Plus 1 hour (60 seconds * 60 minutes)
+  date = p$timestamp[1]
+  p <- p$distance
+  q <- q$distance
+  qmin <- length(q)
+  pmin <- length(p)
+  minobs <- min(qmin, pmin)
+  lst <- data.frame()
+  for (j in 1:10){
+    pp <- sample(p, minobs, replace = TRUE)
+    qq <- sample(q, minobs, replace = TRUE)
+    js <- JSD(qq, pp)
+    indat <- data.frame(js = sqrt(js))
+    lst <- rbind(lst, indat)
+  }
+  outdat <- data.frame(t = date, jsd_mean = mean(lst$js), jsd_sd = sd(lst$js))
+  jsd_dat <- rbind(jsd_dat, outdat)
+}
+
+jsd_dat$day <- day(jsd_dat$t)
+jsd_dat$hour <- hour(jsd_dat$t)
+jsd_dat2 <- jsd_dat %>% 
+  group_by(t) %>% 
+  summarise(jsd_mean = mean(jsd_mean))
+
+jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
+
+s5b <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
+  theme_tufte(13) +
+  geom_point() +
+  labs(x="Day in Jan-Feb", y="JS-Distance (t, t+1)") +
+  theme(panel.border = element_rect(colour = "grey", fill=NA, size=1)) +
+  scale_x_continuous(breaks = c(1, 4*24, 9*24, 14*24, 16*24, 21*24, 26*24, 31*24), labels = c(16, 20, 25, 30, 1, 5, 10, 15)) +
+  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
+  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
+  annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
+  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
+  NULL
+
+s5b
+
+dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2018-02-05_2018-03-10.feather'))
+fig3 <- filter(dat, distance != 0)
+fig3 <- filter(fig3, NN <= 5)
+fig3 <- fig3 %>% 
+  group_by(timestamp, vessel_A) %>% 
+  summarise(distance = mean(distance))
+fig3$ln_distance <- log(1 + fig3$distance)
+fig3$month <- month(fig3$timestamp)
+fig3$day <- day(fig3$timestamp)
+fig3$hour <- hour(fig3$timestamp)
+
+jsd_dat <- data.frame()
+for (i in unique(fig3$timestamp)){
+  p <- filter(fig3, timestamp == i )
+  q <- filter(fig3, timestamp == i + 60*60) # Plus 1 hour (60 seconds * 60 minutes)
+  date = p$timestamp[1]
+  p <- p$distance
+  q <- q$distance
+  qmin <- length(q)
+  pmin <- length(p)
+  minobs <- min(qmin, pmin)
+  lst <- data.frame()
+  for (j in 1:10){
+    pp <- sample(p, minobs, replace = TRUE)
+    qq <- sample(q, minobs, replace = TRUE)
+    js <- JSD(qq, pp)
+    indat <- data.frame(js = sqrt(js))
+    lst <- rbind(lst, indat)
+  }
+  outdat <- data.frame(t = date, jsd_mean = mean(lst$js), jsd_sd = sd(lst$js))
+  jsd_dat <- rbind(jsd_dat, outdat)
+}
+
+jsd_dat$day <- day(jsd_dat$t)
+jsd_dat$hour <- hour(jsd_dat$t)
+jsd_dat2 <- jsd_dat %>% 
+  group_by(t) %>% 
+  summarise(jsd_mean = mean(jsd_mean))
+
+jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
+
+s5c <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
+  theme_tufte(13) +
+  geom_point() +
+  labs(x="Day in Feb-Mar", y="JS-Distance (t, t+1)") +
+  theme(panel.border = element_rect(colour = "grey", fill=NA, size=1)) +
+  scale_x_continuous(breaks = c(1, 5*24-12, 10*24-12, 15*24-12, 20*24-12, 25*24-12, 29*24-12, 33*24-12), labels = c(5, 10, 15, 20, 25, 1, 5, 10)) +
+  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
+  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
+  annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
+  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
+  NULL
+
+plot_grid(s5a, s5b, s5c, labels = c("(A)", "(B)", "(C)"))
+
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.png", width = 6, height = 8)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.pdf", width = 6, height = 8)
