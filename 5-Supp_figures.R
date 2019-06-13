@@ -617,7 +617,7 @@ jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
 
 s5a <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
-  geom_point() +
+  geom_point(alpha=0.7) +
   labs(x="Day in March", y="JS-Distance (t, t+1)") +
   theme(panel.border = element_rect(colour = "grey", fill=NA, size=1)) +
   scale_x_continuous(breaks = c(1, 5*24, 10*24, 15*24, 20*24, 25*24, 31*24), labels = c(1, 5, 10, 15, 20, 25, 31)) +
@@ -672,7 +672,7 @@ jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
 
 s5b <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
-  geom_point() +
+  geom_point(alpha=0.7) +
   labs(x="Day in Jan-Feb", y="JS-Distance (t, t+1)") +
   theme(panel.border = element_rect(colour = "grey", fill=NA, size=1)) +
   scale_x_continuous(breaks = c(1, 4*24, 9*24, 14*24, 16*24, 21*24, 26*24, 31*24), labels = c(16, 20, 25, 30, 1, 5, 10, 15)) +
@@ -727,7 +727,7 @@ jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
 
 s5c <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
-  geom_point() +
+  geom_point(alpha=0.7) +
   labs(x="Day in Feb-Mar", y="JS-Distance (t, t+1)") +
   theme(panel.border = element_rect(colour = "grey", fill=NA, size=1)) +
   scale_x_continuous(breaks = c(1, 5*24-12, 10*24-12, 15*24-12, 20*24-12, 25*24-12, 29*24-12, 33*24-12), labels = c(5, 10, 15, 20, 25, 1, 5, 10)) +
@@ -741,8 +741,8 @@ s5c
 
 plot_grid(s5a, s5b, s5c, labels = c("(A)", "(B)", "(C)"))
 
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.png", width = 8, height = 6.5)
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.pdf", width = 8, height = 6.5)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.png", width = 8, height = 7)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.pdf", width = 8, height = 7)
 
 
 #--------------------------------------------------------------
