@@ -117,5 +117,5 @@ Leading JS-Divergence (`t`, `t+1`)
 
 <p align="center">
 
-<img align="center" width="500" src="https://github.com/johnwoodill/Puerto_Madryn_IUU_Fleet_Behavior/raw/master/figures/supporting/leading_JS.png?raw=true">
+<img align="center" width="500" src="https://github.com/johnwoodill/Anomalous-IUU-Events-Argentina/raw/master/figures/leading_JS.png?raw=true">
 

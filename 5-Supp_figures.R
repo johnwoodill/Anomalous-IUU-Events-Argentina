@@ -276,8 +276,8 @@ ggdraw() + draw_plot(fig4a, 0, .50, height = .5, width = 1) +
   draw_plot(fig4b, 0, 0, height= .5, width = 1)
 
   
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s2.pdf", width = 6, height = 8)
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s2.png", width = 6, height = 8)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s2.pdf", width = 8, height = 8)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s2.png", width = 8, height = 8)
   
   
 #--------------------------------------------------------------------------------------------
@@ -551,6 +551,7 @@ fig4b
 #   draw_plot(fig4b, .50, 0, height= 1, width = .5)
 
 # Verticle align
+dev.off()
 ggdraw() + draw_plot(fig4a, 0, .50, height = .5, width = 1) + 
   draw_plot(fig4b, 0, 0, height= .5, width = 1)
 
