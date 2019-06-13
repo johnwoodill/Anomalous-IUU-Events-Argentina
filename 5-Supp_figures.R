@@ -741,8 +741,8 @@ s5c
 
 plot_grid(s5a, s5b, s5c, labels = c("(A)", "(B)", "(C)"))
 
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.png", width = 8, height = 6)
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.pdf", width = 8, height = 6)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.png", width = 8, height = 6.5)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.pdf", width = 8, height = 6.5)
 
 
 #--------------------------------------------------------------
