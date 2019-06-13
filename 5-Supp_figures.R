@@ -689,7 +689,7 @@ jsd_dat2 <- jsd_dat %>%
 
 jsd_dat2$day <- seq(1, nrow(jsd_dat2), 1)
 
-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
+s5a <-ggplot(jsd_dat2, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
   geom_point() +
   labs(x="Day in March", y="JS-Distance (t, t+1)") +
