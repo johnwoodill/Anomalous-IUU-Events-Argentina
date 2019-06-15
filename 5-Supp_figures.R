@@ -537,7 +537,7 @@ fig4b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   geom_vline(xintercept = 13*24, color='grey') +
   geom_vline(xintercept = 19*24, color='grey') +
   annotate('text', x=16*24, y=0.225, label = "Event \n Window") +
-  theme(legend.position = c(.12, .2),
+  theme(legend.position = c(.10, .2),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),
         legend.direction = 'vertical',
@@ -620,13 +620,16 @@ jsd_s5a <- jsd_dat2
 s5a <-ggplot(jsd_s5a, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
   geom_point(alpha=0.7) +
-  labs(x="Day in March", y="JS-Distance (t, t+1)") +
+  labs(x="Day in March", y="Leading JS-Distance") +
   theme(panel.border = element_rect(colour = "grey", fill=NA, size=1)) +
   scale_x_continuous(breaks = c(1, 5*24, 10*24, 15*24, 20*24, 25*24, 31*24), labels = c(1, 5, 10, 15, 20, 25, 31)) +
   annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
   annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
+  # ylim(0.33, 0.4) +
+  scale_y_continuous(breaks = c(0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40, 0.41), limits = c(0.33, 0.41)) +
+  annotate("text", x=24*31-6, y = 0.41, label='(A)', size = 5, color="black") +
   NULL
 
 s5a
@@ -677,13 +680,16 @@ jsd_s5b <- jsd_dat2
 s5b <-ggplot(jsd_s5b, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
   geom_point(alpha=0.7) +
-  labs(x="Day in Jan-Feb", y="JS-Distance (t, t+1)") +
+  labs(x="Day in Jan-Feb", y="Leading JS-Distance") +
   theme(panel.border = element_rect(colour = "grey", fill=NA, size=1)) +
   scale_x_continuous(breaks = c(1, 4*24, 9*24, 14*24, 16*24, 21*24, 26*24, 31*24), labels = c(16, 20, 25, 30, 1, 5, 10, 15)) +
   annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
   annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
+  # ylim(0.33, 0.4) +
+  scale_y_continuous(breaks = c(0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40, 0.41), limits = c(0.33, 0.41)) +
+  annotate("text", x=24*32-6, y = 0.41, label='(B)', size = 5, color="black") +
   NULL
 
 s5b
@@ -734,21 +740,23 @@ jsd_s5c <- jsd_dat2
 s5c <-ggplot(jsd_s5c, aes(x=day, y=jsd_mean)) + 
   theme_tufte(13) +
   geom_point(alpha=0.7) +
-  labs(x="Day in Feb-Mar", y="JS-Distance (t, t+1)") +
+  labs(x="Day in Feb-Mar", y="Leading JS-Distance") +
   theme(panel.border = element_rect(colour = "grey", fill=NA, size=1)) +
   scale_x_continuous(breaks = c(1, 5*24-12, 10*24-12, 15*24-12, 20*24-12, 25*24-12, 29*24-12, 33*24-12), labels = c(5, 10, 15, 20, 25, 1, 5, 10)) +
   annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
   annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
+  scale_y_continuous(breaks = c(0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40, 0.41), limits = c(0.33, 0.41)) +
+  annotate("text", x=24*34-6, y = 0.41, label='(C)', size = 5, color="black") +
   NULL
 
 s5c
 
-plot_grid(s5a, s5b, s5c, labels = c("(A)", "(B)", "(C)"))
+plot_grid(s5a, s5b, s5c)
 
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.png", width = 8, height = 7)
-ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.pdf", width = 8, height = 7)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.png", width = 8, height = 6)
+ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s5.pdf", width = 8, height = 6)
 
 
 #--------------------------------------------------------------
