@@ -11,6 +11,9 @@ siuu.PROC_DATA_LOC = '/home/server/pi/homes/woodilla/Projects/Anomalous-IUU-Even
 siuu.REGION = 'Argentina'
 siuu.MAX_SPEED = 32
 
+# Check if dir exists and create
+os.makedirs(siuu.PROC_DATA_LOC, exist_ok=True) 
+
 siuu.region = 1
 siuu.lon1 = -68
 siuu.lon2 = -51
