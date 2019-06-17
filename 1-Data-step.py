@@ -1,5 +1,5 @@
 import spatialIUU.processGFW as siuu
-
+import os
 
 # Set global constants
 global GFW_DIR, GFW_OUT_DIR_CSV, GFW_OUT_DIR_FEATHER, PROC_DATA_LOC, MAX_SPEED, REGION, lon1, lon2, lat1, lat2
