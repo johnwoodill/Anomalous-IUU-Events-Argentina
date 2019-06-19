@@ -452,7 +452,7 @@ ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s3.pdf", width 
 #--------------------------------------------------------------------------------------------
 # Figure S4 - time-series of the trailing rate of change in JS divergence as an index of behavioral change
   
-dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2018-02-05_2018-03-10.feather"))
+dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2018-02-05_2018-03-10.feather"))
 
 
 d <- as.matrix(dat)
@@ -567,6 +567,69 @@ ggdraw() + draw_plot(fig4a, 0, .50, height = .5, width = 1) +
 
 ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s4.png", width = 8, height = 8)
 ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure_s4.pdf", width = 8, height = 8)
+
+# ------------------------------------------------
+# Stress test
+dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-01_2016-03-31.feather"))
+
+d <- as.matrix(dat)
+fit <- isoMDS(d, k=5)
+
+isoMDS_dat <- data.frame(x1 = fit$points[, 1], x2 = fit$points[, 2], x3 = fit$points[, 3], x4 = fit$points[, 4], x5 = fit$points[, 5])
+
+stress <- fit$stress
+isoMDS_dat$dist <- sqrt(((isoMDS_dat$x1 - isoMDS_dat$x2 - isoMDS_dat$x3 - isoMDS_dat$x4 - isoMDS_dat$x5)^2 + (lead(isoMDS_dat$x1) - lead(isoMDS_dat$x2) - lead(isoMDS_dat$x3) - lead(isoMDS_dat$x4) - lead(isoMDS_dat$x5))^2))
+isoMDS_dat$speed <- isoMDS_dat$dist/1
+head(isoMDS_dat)
+
+# Remove last obs
+isoMDS_dat <- filter(isoMDS_dat, !is.na(dist))
+
+isoMDS_dat$row <- 1:nrow(isoMDS_dat)
+
+# Color by speed (distance from day to lead(day))
+fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed)) + 
+  geom_point(size=1.5, alpha = 0.7) +
+  labs(x="Day in March", y="Speed of JS-Distance Divergence", color = "Cluster") +
+  # annotate("text", x=24*31, y = 0.245, label='(B)', size = 5, color="black") +
+  theme_tufte(13) +
+  geom_vline(xintercept = 12*24, color='grey') +
+  geom_vline(xintercept = 18*24, color='grey') +
+  annotate('text', x=15*24, y=0.32, label = "Event \n Window") +
+  theme(legend.position = c(.10, .2),
+        legend.box = "vertical",
+        legend.box.background = element_rect(colour = "grey"),
+        legend.direction = 'vertical',
+        legend.justification = 'right',
+        legend.title=element_text(size=8),
+        legend.text = element_text(size=8),
+        plot.title = element_text(hjust = 0.5)) +
+  scale_x_continuous(breaks = c(1, 5*24, 10*24, 15*24, 20*24, 25*24, 31*24), labels = c(1, 5, 10, 15, 20, 25, 31)) +
+  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, color = "grey") +
+  annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, color = "grey") +
+  annotate("segment", x=Inf, xend=Inf, y=-Inf, yend=Inf, color = "grey") +
+  annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
+  #scale_color_viridis(discrete=TRUE) +
+  scale_color_manual(breaks = c("1", "2", "3"),
+                     values = c("#440154FF", "#21908CFF", "darkorange")) +
+  NULL
+
+fig3b
+
+# Horizontal align
+# ggdraw() + draw_plot(fig3a, 0, 0, height = 1, width = .5) +
+#  draw_plot(fig3b, .50, 0, height= 1, width = .5)
+
+# Verticle align
+ggdraw() + draw_plot(fig3a, 0, .50, height = .5, width = 1) + 
+  draw_plot(fig3b, 0, 0, height= .5, width = 1)
+
+# ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.png", width = 8, height = 8)
+# ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure3.pdf", width = 8, height = 8)
+
+
+
+
 
 
 

@@ -319,6 +319,19 @@ dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/dat
 
 d <- as.matrix(dat)
 fit <- isoMDS(d, k=2)
+
+# outdat <- data.frame()
+# for (i in 1:5){
+#   fit <- isoMDS(d, k=i)
+#   stress <- fit$stress
+#   indat <- data.frame(k = i, stress = stress)
+#   outdat <- rbind(outdat, indat)
+# 
+# }
+# 
+# ggplot(outdat, aes(x=k, y=stress/100)) + geom_point() + geom_line() + theme_tufte(13) + geom_hline(yintercept = 0.05, linetype = 'dashed')
+
+
 stress <- fit$stress
 isoMDS_dat <- data.frame(x = fit$points[, 1], y = fit$points[, 2])
 
@@ -411,7 +424,7 @@ fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) +
   annotate("segment", x=Inf, xend=-Inf, y=Inf, yend=Inf, color = "grey") +
   #scale_color_viridis(discrete=TRUE) +
   scale_color_manual(breaks = c("1", "2", "3"),
-                     values = c("#440154FF", "#21908CFF", "darkorange"))
+                     values = c("#440154FF", "#21908CFF", "darkorange")) +
   NULL
 
 fig3b

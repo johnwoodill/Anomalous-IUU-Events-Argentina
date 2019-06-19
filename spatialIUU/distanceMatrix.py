@@ -8,6 +8,7 @@ def f_js(x, y):
 
 
 def d_matrix(dat, interval, NN=0):
+    dat = dat[dat['NN'] != 0]
     dat = dat[dat['NN'] <= NN]
     dat.loc[:, 'distance'] = np.log(1 + dat.loc[:, 'distance'])
 
