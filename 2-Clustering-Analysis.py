@@ -44,7 +44,7 @@ def k_medoids(distMatrix, interval, init_medoids):
     return(df)
 
 
-print("[1/3] Calculating distance matrices March 1-31 2016")
+print("[1/4] Calculating distance matrices March 1-31 2016")
 # ------------------------------------------------------
 # Puerto Madryn March 1-31 2016 Region 1
 ## NN = 1
@@ -91,6 +91,8 @@ distMatrix_dh1.columns = distMatrix_dh1.columns.astype(str)
 # Save distance matrix
 distMatrix_dh1.to_feather(
     '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-01_2016-03-31.feather')
+
+np.save('~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-01_2016-03-31.npy')
 
 distMatrix_dh2, distArray_dh = dm.d_matrix(dat, interval='dayhour', NN=2)
 #pdat2 = k_medoids(distMatrix_dh, interval='dayhour',
@@ -140,7 +142,7 @@ distMatrix_dh5.to_feather(
     '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-01_2016-03-31.feather')
 
 
-print("[2/3] Calculating distance matrices Jan 15 - Feb 15 2018")
+print("[2/4] Calculating distance matrices Jan 15 - Feb 15 2018")
 # ------------------------------------------------------
 # Puerto Madryn January 15-February 15 2018 Region 1
 # Import data
@@ -236,7 +238,7 @@ distMatrix_dh10.to_feather(
     '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2018-01-15_2018-02-15.feather')
 
 
-print("[3/3] Calculating distance matrices Feb 5 - March 10 2018")
+print("[3/4] Calculating distance matrices Feb 5 - March 10 2018")
 # ------------------------------------------------------
 # Puerto Madryn February 05 to March 10 2018 Region 1
 # Import data
@@ -286,7 +288,7 @@ distMatrix_dh12, distArray_dh = dm.d_matrix(dat, interval='dayhour', NN=2)
 #                  init_medoids=[156, 324, 492])
 
 # Convert matrix to data.frame
-distMatrix_d12 = pd.DataFrame(distMatrix_dh12)
+distMatrix_dh12 = pd.DataFrame(distMatrix_dh12)
 distMatrix_dh12.columns = distMatrix_dh12.columns.astype(str)
 
 # Save distance matrix
@@ -333,3 +335,170 @@ distMatrix_dh15.to_feather(
     '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2018-02-05_2018-03-10.feather')    
 
 
+# Two weeks prior, one week after
+print("[4/4] Calculating distance matrices March 1 - 14")
+# ------------------------------------------------------
+# Puerto Madryn March 1-31 2016 Region 1
+## NN = 1
+
+# Import data
+dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather')
+
+# Subset March 1 - 14
+dat1 = dat[(dat.timestamp >= f" 03-01-2016 00:00:00") & (dat.timestamp <= f"03-14-2016 23:59:00")]
+
+distMatrix_dh16, distArray_dh = dm.d_matrix(dat1, interval='dayhour', NN=1)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh16 = pd.DataFrame(distMatrix_dh16)
+distMatrix_dh16.columns = distMatrix_dh16.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh16.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-01_2016-03-14.feather')    
+
+
+distMatrix_dh17, distArray_dh = dm.d_matrix(dat1, interval='dayhour', NN=5)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh17 = pd.DataFrame(distMatrix_dh17)
+distMatrix_dh17.columns = distMatrix_dh17.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh17.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-01_2016-03-14.feather')    
+
+
+# Week after
+dat2 = dat[(dat.timestamp >= f" 03-22-2016 00:00:00") & (dat.timestamp <= f"03-31-2016 23:59:00")]
+
+distMatrix_dh18, distArray_dh = dm.d_matrix(dat2, interval='dayhour', NN=1)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh18 = pd.DataFrame(distMatrix_dh18)
+distMatrix_dh18.columns = distMatrix_dh18.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh18.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-22_2016-03-31.feather')    
+
+
+distMatrix_dh19, distArray_dh = dm.d_matrix(dat2, interval='dayhour', NN=5)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh19 = pd.DataFrame(distMatrix_dh19)
+distMatrix_dh19.columns = distMatrix_dh19.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh19.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-22_2016-03-31.feather')    
+
+# April 2016 Non-event
+print("[5/5] Calculating distance matrices April 1 - 30 2016")
+# ------------------------------------------------------
+
+# Import data
+dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-04-01_2016-04-30.feather')
+
+
+distMatrix_dh20, distArray_dh = dm.d_matrix(dat, interval='dayhour', NN=1)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh20 = pd.DataFrame(distMatrix_dh20)
+distMatrix_dh20.columns = distMatrix_dh20.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh20.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-04-01_2016-04-30.feather')    
+
+
+distMatrix_dh21, distArray_dh = dm.d_matrix(dat, interval='dayhour', NN=5)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh21 = pd.DataFrame(distMatrix_dh21)
+distMatrix_dh21.columns = distMatrix_dh21.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh21.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-04-01_2016-04-30.feather')    
+
+
+
+# April 2016 Non-event
+print("[5/5] Calculating distance matrices April 1 - 30 2016")
+# ------------------------------------------------------
+
+# Import data
+dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-04-15_2016-04-30.feather')
+
+
+distMatrix_dh20, distArray_dh = dm.d_matrix(dat, interval='dayhour', NN=1)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh20 = pd.DataFrame(distMatrix_dh20)
+distMatrix_dh20.columns = distMatrix_dh20.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh20.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-04-01_2016-04-30.feather')    
+
+
+distMatrix_dh21, distArray_dh = dm.d_matrix(dat, interval='dayhour', NN=5)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh21 = pd.DataFrame(distMatrix_dh21)
+distMatrix_dh21.columns = distMatrix_dh21.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh21.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-04-01_2016-04-30.feather')    
+
+
+# April 2016 Non-event
+print("[6/6] Calculating distance matrices April 15 - May 15 2016")
+# ------------------------------------------------------
+
+# Import data
+dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-04-15_2016-05-15.feather')
+
+
+distMatrix_dh22, distArray_dh = dm.d_matrix(dat, interval='dayhour', NN=1)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh22 = pd.DataFrame(distMatrix_dh22)
+distMatrix_dh22.columns = distMatrix_dh22.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh22.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-04-15_2016-05-15.feather')    
+
+
+distMatrix_dh23, distArray_dh = dm.d_matrix(dat, interval='dayhour', NN=5)
+#pdat6 = k_medoids(distMatrix_dh, interval='dayhour',
+#                  init_medoids=[156, 324, 492])
+
+# Convert matrix to data.frame
+distMatrix_dh23 = pd.DataFrame(distMatrix_dh23)
+distMatrix_dh23.columns = distMatrix_dh23.columns.astype(str)
+
+# Save distance matrix
+distMatrix_dh23.to_feather(
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-04-15_2016-05-15.feather')    

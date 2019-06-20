@@ -315,10 +315,23 @@ ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2.pdf", width = 
 # Viridis colors
 # "#440154FF" "#21908CFF" "#FDE725FF"
 
+# rotate <- function(x) t(apply(x, 2, rev))
+
 dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-01_2016-03-31.feather"))
+
+# dat <- rotate(rotate(dat))
 
 d <- as.matrix(dat)
 fit <- isoMDS(d, k=2)
+
+# mono nMDS
+#fit <- monoMDS(d, k=5, model = 'hybrid')
+
+# Shepards plot
+# d <- as.dist(d)
+# shep.d <- Shepard(d, fit$points)
+# plot(shep.d)
+
 
 # outdat <- data.frame()
 # for (i in 1:5){
@@ -359,7 +372,7 @@ isoMDS_dat <- left_join(isoMDS_dat, clustdat, by = 'row')
 
 # Calc distance t and t+1
 # 2-axis
-isoMDS_dat$dist <- sqrt( (isoMDS_dat$x - isoMDS_dat$y)^2 + (lead(isoMDS_dat$x) - lead(isoMDS_dat$y))^2 )
+isoMDS_dat$dist <- sqrt( (isoMDS_dat$x - lead(isoMDS_dat$x))^2 + isoMDS_dat$y - lead(isoMDS_dat$y)^2 )
 
 # Remove last obs
 isoMDS_dat <- filter(isoMDS_dat, !is.na(cluster) | !is.na(dist))
@@ -404,11 +417,11 @@ fig3a
 fig3b <- ggplot(isoMDS_dat, aes(x=row, y=speed, color = factor(cluster))) + 
   geom_point(size=1.5, alpha = 0.7) +
   labs(x="Day in March", y="Speed of JS-Distance Divergence", color = "Cluster") +
-  annotate("text", x=24*31, y = 0.245, label='(B)', size = 5, color="black") +
+  # annotate("text", x=24*31, y = 0.245, label='(B)', size = 5, color="black") +
   theme_tufte(13) +
   geom_vline(xintercept = 12*24, color='grey') +
   geom_vline(xintercept = 18*24, color='grey') +
-  annotate('text', x=15*24, y=0.24, label = "Event \n Window") +
+  # annotate('text', x=15*24, y=0.24, label = "Event \n Window") +
   theme(legend.position = c(.10, .2),
         legend.box = "vertical",
         legend.box.background = element_rect(colour = "grey"),

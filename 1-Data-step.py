@@ -33,5 +33,10 @@ siuu.lat2 = -39
 
 # Third event: Feb 21, 2018
 # https://www.reuters.com/article/us-argentina-china-fishing/argentina-calls-for-capture-of-five-chinese-fishing-boats-idUSKCN1GK35T
-siuu.compileData('2018-02-05', '2018-03-10', 1, parallel=True, ncores=20)
+#siuu.compileData('2018-02-05', '2018-03-10', 1, parallel=True, ncores=20)
 
+# Robust check for month preceeding event
+#siuu.compileData('2016-04-01', '2016-04-30', 1, parallel=True, ncores=20)
+
+# Robust check for month preceeding event
+siuu.compileData('2016-04-15', '2016-05-15', 1, parallel=True, ncores=20)
