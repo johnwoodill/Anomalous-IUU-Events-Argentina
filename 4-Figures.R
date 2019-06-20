@@ -372,7 +372,7 @@ isoMDS_dat <- left_join(isoMDS_dat, clustdat, by = 'row')
 
 # Calc distance t and t+1
 # 2-axis
-isoMDS_dat$dist <- sqrt( (isoMDS_dat$x - lead(isoMDS_dat$x))^2 + isoMDS_dat$y - lead(isoMDS_dat$y)^2 )
+isoMDS_dat$dist <- sqrt( (isoMDS_dat$x - lead(isoMDS_dat$x))^2 + (isoMDS_dat$y - lead(isoMDS_dat$y))^2 )
 
 # Remove last obs
 isoMDS_dat <- filter(isoMDS_dat, !is.na(cluster) | !is.na(dist))
