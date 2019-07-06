@@ -419,6 +419,10 @@ def compileData(beg_date, end_date, region, parallel=False, ncores=None):
     # Group by mmis and interpolate to hour
     outdat = outdat.groupby('mmsi', as_index=False).apply(interp_hr, start, end)
 
+    savedat = outdat.reset_index(drop=True)
+    savedat.to_feather(f"{PROC_DATA_LOC}_inter_hourly_loc_{REGION}_5NN_region{region}_{beg_date}_{end_date}.feather")
+
+
     print(f"{datetime.now()}: [4/5] - Calculating NN")
     # Calc dist.
     odat = outdat.groupby('timestamp', as_index=False).apply(NN_dist)

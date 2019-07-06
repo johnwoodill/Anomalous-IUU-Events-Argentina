@@ -39,4 +39,21 @@ siuu.lat2 = -39
 #siuu.compileData('2016-04-01', '2016-04-30', 1, parallel=True, ncores=20)
 
 # Robust check for month preceeding event
-siuu.compileData('2016-04-15', '2016-05-15', 1, parallel=True, ncores=20)
+#siuu.compileData('2016-04-15', '2016-05-15', 1, parallel=True, ncores=20)
+
+# Predict event is happening
+#siuu.compileData('2016-02-16', '2016-03-16', 1, parallel=True, ncores=20)
+
+# Second event: Feb 2, 2018 preceeding
+#siuu.compileData('2018-01-02', '2018-02-02', 1, parallel=True, ncores=20)
+
+# Month after IUU
+#siuu.compileData('2016-03-16', '2016-04-16', 1, parallel=True, ncores=20)
+
+# Month before IUU
+siuu.compileData('2016-02-01', '2016-03-01', 1, parallel=True, ncores=30)
+
+
+# Third event: Feb 21, 2018
+# https://www.reuters.com/article/us-argentina-china-fishing/argentina-calls-for-capture-of-five-chinese-fishing-boats-idUSKCN1GK35T
+#siuu.compileData('2018-01-21', '2018-02-21', 1, parallel=True, ncores=20)

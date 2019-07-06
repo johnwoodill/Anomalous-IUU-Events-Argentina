@@ -12,14 +12,19 @@ library(gg3D)
 library(marmap)
 
 JSD <- function(p, q){
-  pfun <- approxfun(density(p))
-  p <- pfun(p)/sum(pfun(p))
-  qfun <- approxfun(density(q))
-  q <- qfun(q)/sum(qfun(q))
+  # pfun <- approxfun(density(p))
+  # p <- pfun(p)/sum(pfun(p))
+  # qfun <- approxfun(density(q))
+  # q <- qfun(q)/sum(qfun(q))
   m <- 0.5 * (p + q)
   JS <- 0.5 * (sum(p * log(p / m)) + sum(q * log(q / m)))
   return(JS)
 }
+
+x = ph
+y = qh
+JSD(x, y)
+JSD<- function(x,y) sqrt(0.5 * (sum(x*log(x/((x+y)/2))) + sum(y*log(y/((x+y)/2)))))
 
 
 #--------------------------------------------------------------------------------------------
@@ -648,28 +653,48 @@ fig3$month <- month(fig3$timestamp)
 fig3$day <- day(fig3$timestamp)
 fig3$hour <- hour(fig3$timestamp)
 
+
+
+
+breaks=seq(min(data),max(data),l=number_of_bins+1)
+
+x = 
+bw <- 2 * IQR(q) / length(q)^(1/3)
+num_bins <- diff(range(p)) / (2 * IQR(p) / length(p)^(1/3))
+ph <- graphics::hist(p, breaks="FD", plot=FALSE)
+qh <- graphics::hist(q, breaks=bw, plot=FALSE)
+ph <- ph$counts/sum(ph$counts)
+qh <- qh$counts/sum(qh$counts)
+
+JSD(rbind(qh, ph))
+
 jsd_dat <- data.frame()
 for (i in unique(fig3$timestamp)){
   print(i)
   p <- filter(fig3, timestamp == i )
   q <- filter(fig3, timestamp == i + 60*60) # Plus 1 hour (60 seconds * 60 minutes)
   date = p$timestamp[1]
-  p <- p$distance
-  q <- q$distance
-  qmin <- length(q)
-  pmin <- length(p)
-  minobs <- min(qmin, pmin)
-  lst <- data.frame()
-  for (j in 1:1000){
-    pp <- sample(p, minobs, replace = TRUE)
-    qq <- sample(q, minobs, replace = TRUE)
-    js <- JSD(qq, pp)
-    indat <- data.frame(js = sqrt(js))
-    lst <- rbind(lst, indat)
-  }
-  outdat <- data.frame(t = date, jsd_mean = mean(lst$js), jsd_sd = sd(lst$js))
+  p <- log(1 + p$distance)
+  q <- log(1 + q$distance)
+  num_bins <- diff(range(p)) / (2 * IQR(p) / length(p)^(1/3))
+  ph <- hist(p, breaks=40, plot=FALSE)
+  qh <- hist(q, breaks=40, plot=FALSE)
+  pp <- ph$counts/sum(ph$counts)
+  qq <- qh$counts/sum(qh$counts)
+  jsd_d <- sqrt(JSD(rbind(pp, qq)))
+  #for (j in 1:1000){
+  #  pp <- sample(p, minobs, replace = TRUE)
+  #  qq <- sample(q, minobs, replace = TRUE)
+  #  js <- JSD(qq, pp)
+  #  indat <- data.frame(js = sqrt(js))
+  #  lst <- rbind(lst, indat)
+  #}
+  #outdat <- data.frame(t = date, jsd_mean = mean(lst$js), jsd_sd = sd(lst$js))
+  outdat <- data.frame(t = date, jsd = jsd_d)
   jsd_dat <- rbind(jsd_dat, outdat)
 }
+
+plot(jsd_dat$jsd)
 
 jsd_dat$day <- day(jsd_dat$t)
 jsd_dat$hour <- hour(jsd_dat$t)

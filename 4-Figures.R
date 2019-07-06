@@ -149,14 +149,16 @@ ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png
 # Figure 2: Distance (log transformation))
 
 # (A)
-
+dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-02-16_2016-03-16.feather'))
 dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
+dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-16_2016-04-15.feather'))
+
 dat <- dat %>% 
   mutate(day = day(timestamp),
          hour = hour(timestamp),
          month = month(timestamp)) %>% 
   filter(month == 3) %>%
-  filter(day >= 10 & day <= 20) %>% 
+  # filter(day >= 10 & day <= 20) %>%
   filter(distance != 0) %>% 
   group_by(timestamp, vessel_A) %>% 
   summarise(distance = mean(distance),
@@ -164,7 +166,7 @@ dat <- dat %>%
 
 dat2$date <- paste0(year(dat2$timestamp), "-", month(dat2$timestamp), "-", day(dat2$timestamp), "-", hour(dat2$timestamp))
 
-cdat <- cut(dat$ln_distance, breaks = 50)
+cdat <- cut(dat$ln_distance, breaks = 20)
 
 dat$breaks <- cdat 
 dat$bin <- as.numeric(dat$breaks)
@@ -215,24 +217,25 @@ a <- ifelse(outdat$day != 15, "black", "blue")
 fig2a <- ggplot(outdat, aes(x=timestamp, y=factor(bin))) + 
   geom_tile(aes(fill = prob)) +
   theme_tufte(14) +
-  annotate("text", x=as.POSIXct("2016-03-20 10:00:00"), y = 45, label='(A)', size = 5, color  = "white") +
-  labs(x="Day in March", y="Binned Distance (log km)", fill="P(d)") +
+  # annotate("text", x=as.POSIXct("2016-03-20 10:00:00"), y = 45, label='(A)', size = 5, color  = "white") +
+  #labs(x="Day in March", y="Binned Distance (log km)", fill="P(d)") +
+  labs(x="Day in March", y="Binned Distance", fill="P(d)") +
   geom_vline(xintercept = 14) +
-  scale_x_datetime(date_breaks = "1 day",
-                   date_labels = "%d",
-                   labels = c(seq(10, 21, 1)),
-                   breaks = seq(10, 21, 1),
-                   expand = expand_scale(mult = c(0, 0))) +
-  scale_y_discrete(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50), 
-                   labels = round(ddat$m_dist, 1), 
-                   expand = c(0, 0)) +
+  # scale_x_datetime(date_breaks = "1 day",
+  #                  date_labels = "%d",
+  #                  labels = c(seq(10, 21, 1)),
+  #                  breaks = seq(10, 21, 1),
+  #                  expand = expand_scale(mult = c(0, 0))) +
+  # scale_y_discrete(breaks = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50), 
+  #                  labels = round(ddat$m_dist, 1), 
+  #                  expand = c(0, 0)) +
   scale_fill_gradientn(colours=rev(brewer.pal(11, "Spectral")), na.value = 'salmon') +
-  annotate("rect", xmin = as.POSIXct("2016-03-13 01:00:00"), 
-           xmax = as.POSIXct("2016-03-17 01:00:00"),  
-           ymin = 0, 
-           ymax = 47,
-           colour="white", alpha=0.1) +
-  annotate("text", x = as.POSIXct("2016-03-15 00:00:00"), y=45, label="Event Window", color='white') +
+  # annotate("rect", xmin = as.POSIXct("2016-03-13 01:00:00"), 
+  #          xmax = as.POSIXct("2016-03-17 01:00:00"),  
+  #          ymin = 0, 
+  #          ymax = 47,
+  #          colour="white", alpha=0.1) +
+  # annotate("text", x = as.POSIXct("2016-03-15 00:00:00"), y=45, label="Event Window", color='white') +
   theme(legend.position = 'right',
         legend.margin=margin(l = 0, unit='cm'),
         panel.border = element_rect(colour = "grey", fill=NA, size=1),
@@ -317,7 +320,7 @@ ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2.pdf", width = 
 
 # rotate <- function(x) t(apply(x, 2, rev))
 
-dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN1_day-hour_2016-03-01_2016-03-31.feather"))
+dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-01_2016-03-31.feather"))
 
 # dat <- rotate(rotate(dat))
 
@@ -372,16 +375,19 @@ isoMDS_dat <- left_join(isoMDS_dat, clustdat, by = 'row')
 
 # Calc distance t and t+1
 # 2-axis
-isoMDS_dat$dist <- sqrt( (isoMDS_dat$x - lead(isoMDS_dat$x))^2 + (isoMDS_dat$y - lead(isoMDS_dat$y))^2 )
+isoMDS_dat$dist <- sqrt( (lead(isoMDS_dat$x) - isoMDS_dat$x)^2 + (lead(isoMDS_dat$y) - isoMDS_dat$y)^2 )
 
 # Remove last obs
 isoMDS_dat <- filter(isoMDS_dat, !is.na(cluster) | !is.na(dist))
 
 event_day <- filter(isoMDS_dat, row >= 12*24 & row <= 17*24)
+isoMDS_dat$event <- ifelse(isoMDS_dat$row >= 14*24, ifelse(isoMDS_dat$row <= 15*24, 1, 0), 0)
 
 isoMDS_dat$speed <- isoMDS_dat$dist/1
 
-fig3a <- ggplot(isoMDS_dat, aes(x, y, color = speed, shape = factor(cluster))) + geom_point() +
+fig3a <- ggplot(isoMDS_dat, aes(x, y, color=speed, shape=factor(cluster))) + 
+  geom_point() +
+  geom_point(data = filter(isoMDS_dat, event == 1), aes(x, y), color='red') +
   theme_tufte(13) +
   # xlim(-0.10, .10) +
   # ylim(-0.12, 0.12) +
