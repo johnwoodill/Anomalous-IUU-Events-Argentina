@@ -928,7 +928,7 @@ for (i in unique(movdat$timestamp)){
     # scale_y_continuous(expand=c(0,0)) +
     # scale_x_continuous(expand=c(0,0)) +
     NULL
-  # movmap
+  movmap
   
   
   ggsave(filename = paste0("~/Projects/Anomalous-IUU-Events-Argentina/figures/animated_fig/hourly_figs/", date_, ".png"), width = 6, height = 4, plot = movmap)

@@ -52,8 +52,8 @@ print("[1/4] Calculating distance matrices March 1-31 2016")
 
 # Import data
 dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather')
-dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-02-16_2016-03-16.feather')
-dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-16_2016-04-16.feather')
+#dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-02-16_2016-03-16.feather')
+#dat = pd.read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-16_2016-04-16.feather')
 
 # Day
 # NN = 1
@@ -142,7 +142,7 @@ distMatrix_dh5.columns = distMatrix_dh5.columns.astype(str)
 
 # Save distance matrix
 distMatrix_dh5.to_feather(
-    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-16_2016-04-16.feather')
+    '~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-01_2016-03-31.feather')
 
 np.save('/home/server/pi/homes/woodilla/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-16_2016-04-16.npy', distMatrix_dh5)
 

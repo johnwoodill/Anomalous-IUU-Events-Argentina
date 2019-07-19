@@ -47,7 +47,7 @@ fig1_dat <- filter(dat, month == "03" & day == "15" & hour == "12" & NN <= 3)
 #-42.7694° S, -65.0317° W
 
 # Correct 4/24/2019
-bat <- getNOAA.bathy(-68, -51, -48, -39, res = 1, keep = TRUE)
+bat <- getNOAA.bathy(-68, -51, -51, -39, res = 1, keep = TRUE)
 bat2 <- getNOAA.bathy(-77, -22, -58, -23, res = 1, keep = TRUE)
 
 loc = c(-58, -22)
@@ -149,16 +149,18 @@ ggsave(filename = "~/Projects/Anomalous-IUU-Events-Argentina/figures/figure1.png
 # Figure 2: Distance (log transformation))
 
 # (A)
-dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-02-16_2016-03-16.feather'))
+#dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-02-16_2016-03-16.feather'))
 dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
-dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-16_2016-04-15.feather'))
+#dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-16_2016-04-16.feather'))
+
+head(dat)
 
 dat <- dat %>% 
   mutate(day = day(timestamp),
          hour = hour(timestamp),
          month = month(timestamp)) %>% 
   filter(month == 3) %>%
-  # filter(day >= 10 & day <= 20) %>%
+  filter(day >= 10 & day <= 20) %>%
   filter(distance != 0) %>% 
   group_by(timestamp, vessel_A) %>% 
   summarise(distance = mean(distance),
@@ -219,7 +221,7 @@ fig2a <- ggplot(outdat, aes(x=timestamp, y=factor(bin))) +
   theme_tufte(14) +
   # annotate("text", x=as.POSIXct("2016-03-20 10:00:00"), y = 45, label='(A)', size = 5, color  = "white") +
   #labs(x="Day in March", y="Binned Distance (log km)", fill="P(d)") +
-  labs(x="Day in March", y="Binned Distance", fill="P(d)") +
+  # labs(x="Day in March", y="Binned Distance", fill="P(d)") +
   geom_vline(xintercept = 14) +
   # scale_x_datetime(date_breaks = "1 day",
   #                  date_labels = "%d",
@@ -322,7 +324,6 @@ ggsave("~/Projects/Anomalous-IUU-Events-Argentina/figures/figure2.pdf", width = 
 
 dat <- as.data.frame(read_feather("~/Projects/Anomalous-IUU-Events-Argentina/data/dmat_Puerto_Madryn_region1_NN5_day-hour_2016-03-01_2016-03-31.feather"))
 
-# dat <- rotate(rotate(dat))
 
 d <- as.matrix(dat)
 fit <- isoMDS(d, k=2)
@@ -375,7 +376,7 @@ isoMDS_dat <- left_join(isoMDS_dat, clustdat, by = 'row')
 
 # Calc distance t and t+1
 # 2-axis
-isoMDS_dat$dist <- sqrt( (lead(isoMDS_dat$x) - isoMDS_dat$x)^2 + (lead(isoMDS_dat$y) - isoMDS_dat$y)^2 )
+isoMDS_dat$dist <- sqrt( (isoMDS_dat$x - lead(isoMDS_dat$x))^2 + (isoMDS_dat$y - lead(isoMDS_dat$y))^2 )
 
 # Remove last obs
 isoMDS_dat <- filter(isoMDS_dat, !is.na(cluster) | !is.na(dist))

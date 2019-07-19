@@ -15,7 +15,7 @@
       'active_2013', 'active_2014', 'active_2015', 'active_2016']]
 '''                     
 
-                    
+import ray
 import pandas as pd
 import numpy as np
 import os as os
@@ -24,6 +24,24 @@ from joblib import Parallel, delayed
 import multiprocessing
 from datetime import datetime, timedelta
 import sys
+from math import radians, cos, sin, asin, sqrt
+
+def haversine(lon1, lat1, lon2, lat2):
+    """
+    Calculate the great circle distance between two points 
+    on the earth (specified in decimal degrees)
+    """
+
+    # convert decimal degrees to radians 
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    # haversine formula 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    km = 6367 * c
+    return km
+
 
 def spherical_dist_populate(lat_lis, lon_lis, r=6371.0088):
     lat_mtx = np.array([lat_lis]).T * np.pi / 180
@@ -42,6 +60,7 @@ def spherical_dist_populate(lat_lis, lon_lis, r=6371.0088):
     mtx = r * np.arccos(cos_lat_d - cos_lat_i*cos_lat_J*(1 - cos_lon_d))
     return mtx
 
+
 def NN_dist(data=None, lat_lis=None, lon_lis=None):
 
     # In miles
@@ -50,6 +69,8 @@ def NN_dist(data=None, lat_lis=None, lon_lis=None):
     # In km
     r = 6371.0088
 
+    
+
     if data is not None:
         data = data.dropna()
         mmsi = data.mmsi
@@ -57,6 +78,8 @@ def NN_dist(data=None, lat_lis=None, lon_lis=None):
         lat_lis = data['lat']
         lon_lis = data['lon']
         timestamp = data['timestamp'].iat[0]
+
+    #print(timestamp)
 
     lat_mtx = np.array([lat_lis]).T * np.pi / 180
     lon_mtx = np.array([lon_lis]).T * np.pi / 180
@@ -172,13 +195,15 @@ def calc_kph(data):
         outvalues = outvalues.append(d, ignore_index=True)
         
         # Calculate travel time
-        t1 = data.timestamp.iat[i]
-        t2 = tlag.iat[i]   
+        t1 = str(data.timestamp.iat[i])
+        t2 = str(tlag.iat[i])
         
         t1 = datetime.strptime(t1, "%Y-%m-%d %H:%M:%S UTC")
         t2 = datetime.strptime(t2, "%Y-%m-%d %H:%M:%S UTC")
     
         tdiff = abs(t2 - t1)
+        #print(tdiff)
+        #tdiff = pd.Series(round(tdiff.seconds/60/60, 4))
         tdiff = pd.Series(round(tdiff.seconds/60/60, 4))
         outvalues2 = outvalues2.append(tdiff)
         
@@ -220,14 +245,13 @@ def interp_hr(data, start, end):
     pdat = pdat.fillna(method='bfill')
     pdat = pdat.fillna(method='ffill')
     pdat['mmsi'] = indat['mmsi'].iat[0]
-
-    
+ 
 
     pdat = pdat.reset_index(drop=True)
     # print(pdat)
     return pdat
 
-
+#@ray.remote
 def processGFW(i):
     '''Parallel function'''
 
@@ -279,23 +303,25 @@ def processGFW(i):
     #13   0.99  19.900000   MPH
     #     Max 1.00   
 
-    # Gropuby mmsi and get distance and time between timestamps
+    # Groupby mmsi and get distance and time between timestamps
     outdat = outdat.groupby('mmsi').apply(calc_kph).reset_index(drop=True)
 
     # (4) Determine if stationary where distance_traveled > 1
-    outdat['stationary'] = np.where(outdat['dist'] > 1, 0, 1)
+    outdat['stationary'] = np.where(outdat['kph'] > 1, 0, 1)
+    outdat = outdat[outdat['stationary'] == 0]
     
     # Get max speed for each mmsi
     mmsi_kph = outdat.groupby('mmsi', as_index=False)['kph'].max()
+    # mmsi_kph = mmsi_kph.reset_index()
 
-    # Keep vessels travel less than 32kph
+    # Keep vessels travel less than 32kph but greater than 1 km
     mmsi_all = mmsi_kph['mmsi'].unique()
     mmsi_kph2 = mmsi_kph[mmsi_kph['kph'] <= MAX_SPEED]
     mmsi_keep = mmsi_kph2['mmsi'].unique()
     outdat = outdat[outdat['mmsi'].isin(mmsi_keep)]
 
     # Get spoofing numbers
-    #print(f"Start MMSI: {len(mmsi_all)} Keep MMSI: {len(mmsi_keep)} Percentage: {len(mmsi_keep)/len(mmsi_all)}")
+    print(f"Start MMSI: {len(mmsi_all)} Keep MMSI: {len(mmsi_keep)} Percentage: {len(mmsi_keep)/len(mmsi_all)}")
 
     # SAVE FILE OUTPUT
         
@@ -336,6 +362,32 @@ def processGFW(i):
 
 def compileData(beg_date, end_date, region, parallel=False, ncores=None):
 
+# Debugging
+# GFW_DIR = '/data2/GFW_point/'
+# GFW_OUT_DIR_CSV = '/home/server/pi/homes/woodilla/Data/GFW_point/Patagonia_Shelf/csv/'
+# GFW_OUT_DIR_FEATHER = '/home/server/pi/homes/woodilla/Data/GFW_point/Patagonia_Shelf/feather/'
+# PROC_DATA_LOC = '/home/server/pi/homes/woodilla/Projects/Anomalous-IUU-Events-Argentina/data/'
+# REGION = 'Argentina'
+# MAX_SPEED = 32
+
+# # # Check if dir exists and create
+# # #os.makedirs(siuu.PROC_DATA_LOC, exist_ok=True) 
+
+# region = 1
+# lon1 = -68
+# lon2 = -51
+# lat1 = -48
+# lat2 = -39
+
+#  #'2016-03-01', '2016-03-31', 1, parallel=True, ncores=20
+# beg_date = '2016-03-01'
+# end_date = '2016-04-05'
+# region = 1
+# parallel = True
+# ncores = 20
+
+
+
     # Get folder list
     gfw_list_dirs = sorted(GFW_directories(GFW_DIR))
 
@@ -357,12 +409,15 @@ def compileData(beg_date, end_date, region, parallel=False, ncores=None):
 
     # Filter
     # subtract and add 2 because of filename mix up
-    folders = new_gfw_list_dirs[start_index[0] - 2:end_index[0] + 2]
+    nmargin = 5
+    folders = new_gfw_list_dirs[start_index[0] - nmargin:end_index[0] + nmargin]
 
     print(
         f"{datetime.now()}: [1/5] - Processing GFW Folders {beg_date} to {end_date}")
-
+    
+    #ray.init()
     if parallel == True:
+        #results = ray.get([processGFW.remote(i) for i in folders])
         pool = multiprocessing.Pool(ncores, maxtasksperchild=1)         
         pool.map(processGFW, folders)
         pool.close()
@@ -380,7 +435,7 @@ def compileData(beg_date, end_date, region, parallel=False, ncores=None):
     feather_files = [item.replace('.feather', '') for item in feather_files]
     start_index = [feather_files.index(i) for i in feather_files if f"{beg_date}" in i]
     end_index = [feather_files.index(i) for i in feather_files if f"{end_date}" in i]
-    files = feather_files[start_index[0] - 1:end_index[0] + 1]
+    files = feather_files[start_index[0] - nmargin:end_index[0] + nmargin]
 
     print('bind data')
     # Bind data
@@ -392,7 +447,15 @@ def compileData(beg_date, end_date, region, parallel=False, ncores=None):
         list_.append(df)
         mdat = pd.concat(list_, sort=False)
 
-    print('ensure vessel moves at least 1 mile during the period')
+    time = pd.DatetimeIndex(mdat['timestamp']).tz_localize('UTC')
+    time2 = time.tz_convert('America/Argentina/Salta')
+    #mdat['timestamp'] = time2
+    mdat['timestamp'] = time2.strftime("%Y-%m-%d %H:%M:%S")
+    print(mdat['timestamp'])
+    mdat['timestamp'] = pd.to_datetime(mdat['timestamp'])
+
+
+    print('ensure vessel moves at least 1 kilometer during the period')
     # Ensure vessel moves at least 1 mile during the period
     vessel_dist = mdat.groupby(['mmsi'], as_index=False)['dist'].sum()
     vessel_dist = vessel_dist[vessel_dist.dist >= 1]
@@ -414,18 +477,34 @@ def compileData(beg_date, end_date, region, parallel=False, ncores=None):
     start = pd.Timestamp(f"{start_year} - {start_month} - {start_day} 00:00")
     end = pd.Timestamp(f"{end_year} - {end_month} - {end_day} 23:59")
 
+
     print(f"{datetime.now()}: [3/5] - Interpolating by MMSI")
     
     # Group by mmis and interpolate to hour
     outdat = outdat.groupby('mmsi', as_index=False).apply(interp_hr, start, end)
 
+    # Calc KPH
+    savedat = outdat
+    savedat['lat_lead'] = savedat.groupby('mmsi', as_index=False)['lat'].shift(1)
+    savedat['lon_lead'] = savedat.groupby('mmsi', as_index=False)['lon'].shift(1)
+    savedat['dist'] = savedat.apply(lambda x: haversine(x['lon'], x['lat'], x['lon_lead'], x['lat_lead']), axis = 1)
+    
+    groups_dist = savedat.groupby('mmsi', as_index=True)['dist'].apply(np.count_nonzero).reset_index()
+    groups_count = savedat.groupby('mmsi', as_index=True)['dist'].count().iat[0]
+    groups_dist['prop'] = groups_dist['dist']/groups_count
+    groups_dist = groups_dist[groups_dist.prop >= 0.5]
+    
+    outdat = outdat[outdat.mmsi.isin(groups_dist.mmsi.unique())]
+
     savedat = outdat.reset_index(drop=True)
-    savedat.to_feather(f"{PROC_DATA_LOC}_inter_hourly_loc_{REGION}_5NN_region{region}_{beg_date}_{end_date}.feather")
+    savedat.to_feather(f"{PROC_DATA_LOC}{REGION}_inter_hourly_loc_5NN_region{region}_{beg_date}_{end_date}.feather")
 
 
     print(f"{datetime.now()}: [4/5] - Calculating NN")
     # Calc dist.
-    odat = outdat.groupby('timestamp', as_index=False).apply(NN_dist)
+
+    outdat = outdat[['timestamp', 'lat', 'lon', 'mmsi']]
+    odat = outdat.groupby('timestamp').apply(NN_dist)
 
      
     # subset days from beg_date end_date
@@ -436,3 +515,4 @@ def compileData(beg_date, end_date, region, parallel=False, ncores=None):
 
     savedat = savedat.reset_index(drop=True)
     savedat.to_feather(f"{PROC_DATA_LOC}{REGION}_5NN_region{region}_{beg_date}_{end_date}.feather")
+

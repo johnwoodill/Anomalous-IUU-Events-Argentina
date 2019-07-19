@@ -17,7 +17,7 @@ os.makedirs(siuu.PROC_DATA_LOC, exist_ok=True)
 siuu.region = 1
 siuu.lon1 = -68
 siuu.lon2 = -51
-siuu.lat1 = -48
+siuu.lat1 = -51
 siuu.lat2 = -39
 
 
@@ -51,9 +51,12 @@ siuu.lat2 = -39
 #siuu.compileData('2016-03-16', '2016-04-16', 1, parallel=True, ncores=20)
 
 # Month before IUU
-siuu.compileData('2016-02-01', '2016-03-01', 1, parallel=True, ncores=30)
+#siuu.compileData('2016-02-01', '2016-03-01', 1, parallel=True, ncores=30)
 
 
 # Third event: Feb 21, 2018
 # https://www.reuters.com/article/us-argentina-china-fishing/argentina-calls-for-capture-of-five-chinese-fishing-boats-idUSKCN1GK35T
 #siuu.compileData('2018-01-21', '2018-02-21', 1, parallel=True, ncores=20)
+
+# Month after IUU
+siuu.compileData('2016-02-15', '2016-04-15', 1, parallel=True, ncores=30)
