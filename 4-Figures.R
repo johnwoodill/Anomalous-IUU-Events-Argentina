@@ -119,6 +119,16 @@ map2 <-
 map2
 
 
+p1<-autoplot(bathy_P, geom=c("raster", "contour")) +  
+  geom_point(aes(x=Long, y=Lat,color=Env),size=2, data=data_plot_PROK) + 
+  geom_raster(aes(fill=z)) +
+  scale_fill_gradientn(values = scales::rescale(c(-6600, 0, 1, 1500)),
+                       colors = c("lightsteelblue4", "lightsteelblue2", "#C6E0FC",
+                                  "grey50", "grey70", "grey85"))
+  
+
+
+
 # Figure 1b
 fig1b <- ggplot(filter(fig1_dat, distance != 0), aes(log(1 + distance))) + 
   geom_histogram(aes(y=..density..), position = "dodge") +

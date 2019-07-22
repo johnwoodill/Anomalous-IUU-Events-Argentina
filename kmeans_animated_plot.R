@@ -14,10 +14,23 @@ library(marmap)
 
 #--------------------------------------------------------------
 # Animated Plot
+
+eez <- read_csv("~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_EEZ.csv")
+
+eez <- filter(eez, lon >= -68 & lon <= -51 & lat >= -51 & lat <= -39)
+eez <- filter(eez, order <= 25190)
+
+ggplot(NULL) + geom_path(data = eez[order(eez$order), ], aes(x=lon, y=lat), linetype = "dashed")
+
 bat <- getNOAA.bathy(-68, -51, -51, -39, res = 1, keep = TRUE)
 # dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/km_test.feather'))
 #head(dat)
 dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/km_means_full_dataset.feather'))
+
+# Subset land vessels
+# !(V1 %in% c('B','N','T')
+dat <- filter(dat, !(mmsi %in% c(701023000, 538002270, 701045000, 701000591, 701000578)))
+
 
 dat$month <- month(dat$timestamp)
 dat$day <- day(dat$timestamp)
@@ -46,11 +59,7 @@ labels
 
 dat <- left_join(dat, labels, by=c("year", "month", "day", "hour", "km_lat"))
 
-#dat <- as.data.frame(read_feather('~/Projects/Anomalous-IUU-Events-Argentina/data/Argentina_5NN_region1_2016-03-01_2016-03-31.feather'))
-
 dat$cluster <- dat$clusterS
-
-# dat <- select(dat, timestamp, year, month, day, hour, min, lat, lon, km_lat, km_lon, cluster)
 
 avg_dist <- dat %>% 
   group_by(year, month, day, hour, cluster) %>% 
@@ -70,11 +79,19 @@ movdat <- filter(movdat, month == "03")
 i = "2016-03-15 12:00:00"
 i = "2016-03-15 19:00:00"
 i = "2016-03-29 00:00:00"
+i = "2016-03-02 16:00:00"
+
+
+# Cluster group
+cent <- data.frame(cluster = c(0, 1, 2, 3), km_lon=c(-65.33, -60.58, -60.33, -58.96), km_lat = c(-47.7, -45.9, -49.3, -41.51))
+
 
 for (i in unique(movdat$timestamp)){
   
   subdat <- filter(movdat, timestamp == i)
   subdat$cluster <- factor(subdat$cluster, levels = c(0, 1, 2, 3), labels = c("0", "1", "2", "3"))
+  
+  subdat <- filter(subdat, lon <= -54)
   
   date_ <- paste0(subdat$year[1], "-", subdat$month[1], "-", subdat$day[1], " ", subdat$hour[1], ":", subdat$min[1], ":00")
   date_
@@ -94,7 +111,9 @@ for (i in unique(movdat$timestamp)){
     geom_point(data=subdat, aes(x=lon, y=lat, color=cluster)) +
     geom_point(data=subdat, aes(x=km_lon, y=km_lat), color='red') +
     geom_text(data=subdat, aes(x=km_lon, y=km_lat, label = km_avg_dist, vjust=-1), size=3.5) +
-    #annotate(data=subdat, "text", x=km_lon, y = km_lat, label=km_avg_dist, size = 4, color='black', fontface=2) +
+    geom_path(data = eez[order(eez$order), ], aes(x=lon, y=lat), linetype = "dashed", alpha = 0.5) +
+    geom_point(data=cent, aes(km_lon, km_lat), color='green') +
+    # geom_text(data=subdat, aes(x=lon, y=lat, label = mmsi, vjust=-1), size=3.5) +
     annotate("text", x=-54.5, y = -39.25, label=date_, size = 4, color='black', fontface=2) +
     theme(axis.title.x=element_blank(),
           axis.text.x=element_blank(),
@@ -123,6 +142,6 @@ for (i in unique(movdat$timestamp)){
   movmap
   
   print(date_)
-  ggsave(filename = paste0("~/Projects/Anomalous-IUU-Events-Argentina/figures/animated_fig/hourly_figs/", date_, ".png"), width = 6, height = 4, plot = movmap)
+  ggsave(filename = paste0("~/Projects/Anomalous-IUU-Events-Argentina/figures/animated_fig/hourly_figs/", date_, ".png"), width = 6, height = 6, plot = movmap)
 }
 

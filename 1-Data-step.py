@@ -16,14 +16,14 @@ os.makedirs(siuu.PROC_DATA_LOC, exist_ok=True)
 
 siuu.region = 1
 siuu.lon1 = -68
-siuu.lon2 = -51
+siuu.lon2 = -54
 siuu.lat1 = -51
 siuu.lat2 = -39
 
 
 # First event: 
 # https://www.cnn.com/2016/03/15/americas/argentina-chinese-fishing-vessel/index.html
-#siuu.compileData('2016-03-01', '2016-03-31', 1, parallel=True, ncores=20)
+siuu.compileData('2016-03-01', '2016-03-31', 1, parallel=True, ncores=20)
 
 
 # Second event: Feb 2, 2018
@@ -59,4 +59,4 @@ siuu.lat2 = -39
 #siuu.compileData('2018-01-21', '2018-02-21', 1, parallel=True, ncores=20)
 
 # Month after IUU
-siuu.compileData('2016-02-15', '2016-04-15', 1, parallel=True, ncores=30)
+#siuu.compileData('2016-02-15', '2016-04-15', 1, parallel=True, ncores=30)
