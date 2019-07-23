@@ -39,7 +39,7 @@ clust.fit(x)
 x = dat1
 
 # Get distances !!!
-clust = OPTICS(metric="euclidean", min_cluster_size=.10)
+clust = OPTICS(metric="euclidean", min_cluster_size=.025)
 def opt_fun(x):
     X = x[['lon', 'lat']]
     clust.fit(X)
